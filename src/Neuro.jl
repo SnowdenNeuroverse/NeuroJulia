@@ -1,5 +1,6 @@
 module Neuro
 
-# package code goes here
+    include("NeuroData.jl")
+    using NeuroData
 
 end # module
