@@ -1,6 +1,6 @@
 module NeuroJulia
 
-    include("NeuroData.jl")
+    include(Pkg.dir() * "/NeuroJulia/src/NeuroData.jl")
     using NeuroData
 
 end # module
