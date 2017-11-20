@@ -60,6 +60,13 @@ module NeuroData
         msgdatalength = length(msgdata)
         headers = Dict("Content-Length" => string(msgdatalength), "Token" => token)
         response = post(url; headers=headers, data=msgdata)
+        if response.status != 200
+            if response.status == 401
+                error("Session has expired: Log into Neuroverse and connect to your Notebooks session or reload the Notebooks page in Neuroverse")
+            else
+                error("Neuroverse connection error: Http code " * string(response.status))
+            end
+        end
         responseobj = JSON.parse(readstring(response))
         if responseobj["Error"] != nothing
             error("Neuroverse Error: " * responseobj["Error"])
