@@ -1,4 +1,4 @@
-module Neuro
+module NeuroJulia
 
     include("NeuroData.jl")
     using NeuroData
