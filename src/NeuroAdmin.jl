@@ -7,12 +7,13 @@ module NeuroAdmin
     global domain = ENV["NV_DOMAIN"] * ":8082/NeuroApi/"
 
     function neurocall(method_address,requestbody)
-        url = domain * "method_address"
-        msgdata = ""
+        url = domain * method_address
+        msgdata = nothing
+        msgdatalength = 0
         if requestbody!=nothing
             msgdata = JSON.json(requestbody)
+            msgdatalength = length(msgdata)
         end
-        msgdatalength = length(msgdata)
         headers = Dict("Content-Length" => string(msgdatalength), "Token" => token)
         response = post(url; headers=headers, data=msgdata)
         if response.status != 200
