@@ -5,7 +5,7 @@ module NeuroAdmin
         service = "notebookmanagement"
         method = "getdetailedsessionlist"
         requestbody=nothing
-        response = neurocall(service,method,requestbody)
+        response = NeuroJulia.neurocall(service,method,requestbody)
         if response["Error"] != nothing
             error("Neuroverse Error: " * response["Error"])
         end
