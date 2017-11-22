@@ -31,7 +31,7 @@ module NeuroAdmin
     end
 
     function getactivesessions()
-        method_address="notebookmanagementservice/api/getdetailedsessionlist/"
+        method_address="notebookmanagementservice/api/notebookmanagement/getdetailedsessionlist/"
         requestbody=nothing
         response = neurocall(method_address,requestbody)
         df = DataFrame()
