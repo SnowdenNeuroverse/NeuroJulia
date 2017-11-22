@@ -2,9 +2,10 @@ module NeuroAdmin
     using DataFrames
 
     function getactivesessions()
-        method_address="notebookmanagementservice/api/notebookmanagement/getdetailedsessionlist/"
+        service = "notebookmanagement"
+        method = "getdetailedsessionlist"
         requestbody=nothing
-        response = neurocall(method_address,requestbody)
+        response = neurocall(service,method,requestbody)
         df = DataFrame()
         df[:Host] = response["SessionList"]["Host"]
         df[:Session_User] = response["SessionList"]["Session User"]
