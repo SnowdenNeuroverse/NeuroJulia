@@ -1,6 +1,7 @@
 module NeuroData
     using NeuroJulia
     using DataFrames
+    using JSON
 
     type SqlQuery
         SourceMappingType
