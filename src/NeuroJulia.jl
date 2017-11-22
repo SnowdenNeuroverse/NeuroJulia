@@ -1,5 +1,5 @@
 module NeuroJulia
-    export NeuroData,NeuroAdmin,neurocall
+    export NeuroData,NeuroAdmin
 
     using JSON
     using Requests
