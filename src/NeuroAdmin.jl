@@ -1,4 +1,5 @@
 module NeuroAdmin
+    using NeuroJulia
     using DataFrames
 
     function getactivesessions()
