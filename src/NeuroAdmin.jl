@@ -6,6 +6,9 @@ module NeuroAdmin
         method = "getdetailedsessionlist"
         requestbody=nothing
         response = neurocall(service,method,requestbody)
+        if response["Error"] != nothing
+            error("Neuroverse Error: " * response["Error"])
+        end
         df = DataFrame()
         df[:Host] = response["SessionList"]["Host"]
         df[:Session_User] = response["SessionList"]["Session User"]
