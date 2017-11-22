@@ -51,7 +51,7 @@ module NeuroData
     function sqltofileshare(transferfromsqltofilesharerequest)
         service = "datamovement"
         method = "TransferFromSqlToFileShare"
-        responseobj = neurocall(service,method,transferfromsqltofilesharerequest)
+        responseobj = NeuroJulia.neurocall(service,method,transferfromsqltofilesharerequest)
         if responseobj["Error"] != nothing
             error("Neuroverse Error: " * responseobj["Error"])
         end
