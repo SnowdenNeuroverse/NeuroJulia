@@ -1,4 +1,5 @@
 module NeuroData
+    using NeuroJulia
     using DataFrames
 
     type SqlQuery
