@@ -56,7 +56,7 @@ module NeuroData
         if responseobj["Error"] != nothing
             error("Neuroverse Error: " * responseobj["Error"])
         end
-        filepath = homedir * transferfromsqltofilesharerequest.FileShareDestinationDefinition.FolderPath
+        filepath = NeuroJulia.homedir * transferfromsqltofilesharerequest.FileShareDestinationDefinition.FolderPath
         filepath = filepath * responseobj["FileName"] * ".info"
 
         keeplooping=true
@@ -80,7 +80,7 @@ module NeuroData
 
     function sqltocsv(;folderpath=nothing,filename=nothing,sqlquery=nothing)
         fs=DestinationFolder(folderpath)
-        folder=homedir * fs.FolderPath
+        folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
             error("File exists: " * folder * filename)
         end
@@ -94,7 +94,7 @@ module NeuroData
         fs=DestinationFolder(nothing)
         tr = TransferFromSqlToFileShareRequest(fs,sqlquery)
         outputname=sqltofileshare(tr)
-        folder=homedir * fs.FolderPath
+        folder=NeuroJulia.homedir * fs.FolderPath
         df = readtable(folder * outputname)
         rm(folder * outputname)
         return df
