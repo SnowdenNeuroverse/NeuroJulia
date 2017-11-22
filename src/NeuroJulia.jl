@@ -8,8 +8,8 @@ module NeuroJulia
     global domain = ENV["NV_DOMAIN"]
     global homedir = "/home/jovyan/session/"
 
-    function neurocall(method_address,requestbody)
-        url = domain * ":8082/NeuroApi/" * method_address
+    function neurocall(service,method,requestbody)
+        url = domain * ":8082/NeuroApi/" * service * "service/api/" * service * "/" * method
         msgdata = nothing
         msgdatalength = 0
         if requestbody!=nothing
