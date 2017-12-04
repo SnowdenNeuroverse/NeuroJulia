@@ -3,6 +3,7 @@ module NeuroJulia
 
     using JSON
     using Requests
+    using MbedTLS
 
     global token = ENV["JUPYTER_TOKEN"]
     global domain = ENV["NV_DOMAIN"]
