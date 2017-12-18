@@ -1,11 +1,7 @@
 module NeuroData
-    using JSON
-    using Requests
+    using NeuroJulia
     using DataFrames
-
-    global token = ENV["JUPYTER_TOKEN"]
-    global domain = ENV["NV_DOMAIN"] * ":8082/NeuroApi/datamovementservice/api/datamovement/"
-    global homedir = "/home/jovyan/session/"
+    using JSON
 
     type SqlQuery
         SourceMappingType
@@ -55,23 +51,13 @@ module NeuroData
     end
 
     function sqltofileshare(transferfromsqltofilesharerequest)
-        url = domain * "TransferFromSqlToFileShare"
-        msgdata = JSON.json(transferfromsqltofilesharerequest)
-        msgdatalength = length(msgdata)
-        headers = Dict("Content-Length" => string(msgdatalength), "Token" => token)
-        response = post(url; headers=headers, data=msgdata)
-        if response.status != 200
-            if response.status == 401
-                error("Session has expired: Log into Neuroverse and connect to your Notebooks session or reload the Notebooks page in Neuroverse")
-            else
-                error("Neuroverse connection error: Http code " * string(response.status))
-            end
-        end
-        responseobj = JSON.parse(readstring(response))
+        service = "datamovement"
+        method = "TransferFromSqlToFileShare"
+        responseobj = NeuroJulia.neurocall(service,method,transferfromsqltofilesharerequest)
         if responseobj["Error"] != nothing
             error("Neuroverse Error: " * responseobj["Error"])
         end
-        filepath = homedir * transferfromsqltofilesharerequest.FileShareDestinationDefinition.FolderPath
+        filepath = NeuroJulia.homedir * transferfromsqltofilesharerequest.FileShareDestinationDefinition.FolderPath
         filepath = filepath * responseobj["FileName"] * ".info"
 
         keeplooping=true
@@ -95,7 +81,7 @@ module NeuroData
 
     function sqltocsv(;folderpath=nothing,filename=nothing,sqlquery=nothing)
         fs=DestinationFolder(folderpath)
-        folder=homedir * fs.FolderPath
+        folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
             error("File exists: " * folder * filename)
         end
@@ -109,7 +95,7 @@ module NeuroData
         fs=DestinationFolder(nothing)
         tr = TransferFromSqlToFileShareRequest(fs,sqlquery)
         outputname=sqltofileshare(tr)
-        folder=homedir * fs.FolderPath
+        folder=NeuroJulia.homedir * fs.FolderPath
         df = readtable(folder * outputname)
         rm(folder * outputname)
         return df
