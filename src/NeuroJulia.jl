@@ -10,9 +10,9 @@ module NeuroJulia
     domain = if contains(domain,"prd")
         "https://neuroverse.com.au"
     elseif contains(domain,"tst")
-        "https://launchau.snowdenonline.com.au/"
+        "https://launchau.snowdenonline.com.au"
     elseif contains(domain,"sit")
-        "https://neurosit.snowdenonline.com.au/"
+        "https://neurosit.snowdenonline.com.au"
     else
         "http://dev-stratos.australiaeast.cloudapp.azure.com"
     end
