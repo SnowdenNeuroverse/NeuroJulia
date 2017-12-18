@@ -7,6 +7,15 @@ module NeuroJulia
 
     global token = ENV["JUPYTER_TOKEN"]
     global domain = ENV["NV_DOMAIN"]
+    domain = if contains(domain,"prd")
+        "https://neuroverse.com.au"
+    elseif contains(domain,"tst")
+        "https://launchau.snowdenonline.com.au/"
+    elseif contains(domain,"sit")
+        "https://neurosit.snowdenonline.com.au/"
+    else
+        "http://dev-stratos.australiaeast.cloudapp.azure.com"
+    end
     global homedir = "/home/jovyan/session/"
 
     function neurocall(service,method,requestbody)
