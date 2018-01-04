@@ -26,7 +26,7 @@ module NeuroJulia
             msgdata = JSON.json(requestbody)
             msgdatalength = length(msgdata)
         end
-        headers = Dict("Content-Length" => string(msgdatalength), "Token" => token)
+        headers = Dict("Content-Length" => string(msgdatalength), "Token" => token, "Accept" => "application/json", "Content-Type" => "application/json")
         response = post(url; headers=headers, data=msgdata)
         if response.status != 200
             if response.status == 401
