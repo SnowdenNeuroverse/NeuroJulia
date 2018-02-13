@@ -14,7 +14,7 @@ module NeuroJulia
     elseif contains(domain,"sit")
         "https://neurosit.snowdenonline.com.au"
     else
-        "http://dev-stratos.australiaeast.cloudapp.azure.com"
+        "http://neurodev.snowdenonline.com.au"
     end
     global homedir = "/home/jovyan/session/"
 
