@@ -19,7 +19,7 @@ module NeuroJulia
     global homedir = "/home/jovyan/session/"
 
     function neurocall(service,method,requestbody)
-        url = domain * ":8082/NeuroApi/" * service * "service/api/" * service * "/" * method
+        url = domain * ":8080/NeuroApi/" * service * "service/api/" * service * "/" * method
         msgdata = nothing
         msgdatalength = 0
         if requestbody!=nothing
