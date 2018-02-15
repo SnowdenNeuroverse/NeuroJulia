@@ -100,4 +100,77 @@ module NeuroData
         rm(folder * outputname)
         return df
     end
+
+    data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14)
+    col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4)
+
+    type DestinationTableDefinitionIndex
+        Index::Int
+    end
+
+    type DestinationTableDefinitionColumn
+        ColumnDataType::Int
+        ColumnName::String
+        ColumnType::Int
+        IsRequired::Bool
+        IsSystemColumn::Bool
+        ValidationError::String
+        WasRemoved::Bool
+        ColumnDataTypePrecision
+        ColumnDataTypeScale
+        ColumnDataTypeSize
+        Index::Int
+        function DestinationTableDefinitionColumn(;ColumnName="",ColumnDataType="",ColumnType="",IsRequired=false)
+            col=new()
+            col.ColumnDataTypePrecision=nothing
+            col.ColumnDataTypeScale=nothing
+            col.ColumnDataTypeSize=nothing
+
+            col.ColumnName=ColumnName
+            col.ColumnType=col_type_map[ColumnType]
+            col.IsRequired=IsRequired
+            col.IsSystemColumn=false
+            col.ValidationError=""
+            col.WasRemoved=false
+
+            if contains(ColumnDataType,"Int")
+                col.ColumnDataType=data_type_map["Int"]
+            elseif contains(ColumnDataType,"String")
+                col.ColumnDataType=data_type_map["String"]
+                col.ColumnDataTypeSize=parse(split(ColumnDataType,['(',')',','])[2])
+            elseif contains(ColumnDataType,"Decimal")
+                col.ColumnDataType=data_type_map["Decimal"]
+                col.ColumnDataTypePrecision=parse(split(ColumnDataType,['(',')',','])[2])
+                col.ColumnDataTypeScale=parse(split(ColumnDataType,['(',')',','])[3])
+            end 
+            return col
+        end
+    end
+
+    type DestinationTableDefinition
+        AllowDataLossChanges::Bool
+        CreatedBy::String
+        CreatedDate::String
+        DestinationTableDefinitionColumns::Array{DestinationTableDefinitionColumn,1}
+        DestinationTableDefinitionIndexes::Array{DestinationTableDefinitionIndex,1}
+        DestinationTableName::String
+        LastChangedBy::String
+        LastChangedDate::String
+        MappingsCount::Int
+        SchemaError::Bool
+        StorageType::Int
+        function DestinationTableDefinition(;AllowDataLossChanges=false,DestinationTableDefinitionColumns=nothing,
+            DestinationTableName=nothing, DestinationTableDefinitionIndexes=nothing)
+            for ind=1:length(DestinationTableDefinitionColumns)
+                DestinationTableDefinitionColumns[ind].Index=ind
+            end
+            CreateDate=string(Dates.now())
+            CreatedBy=NeuroJulia.neurocall("security","getSamsLicenses",nothing)["UserInfo"]["UserId" ]
+           return new(AllowDataLossChanges,CreatedBy,CreateDate,DestinationTableDefinitionColumns,DestinationTableDefinitionIndexes,DestinationTableName,CreatedBy,CreateDate,0,false,1) 
+        end
+    end
+
+    function CreateDestinationTableDefinition(table_def::DestinationTableDefinition)
+        NeuroJulia.neurocall("datapopulation","CreateDestinationTableDefinition",table_def)
+    end
 end
