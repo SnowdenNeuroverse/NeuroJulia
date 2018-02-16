@@ -47,6 +47,7 @@ module NeuroJulia
         try
             run(`mkdir $directory`)
         end
+        filename=split(filename,'.')[1] * ".ipynb"
         output=directory * "/" * split(filename,'.')[1] * "_" * replace(split(string(Dates.now()),'.')[1],':','_') * ".ipynb"
         run(`curl https://raw.githubusercontent.com/SnowdenNeuroverse/NeuroNotebooks/master/notebooks/$filename --output $output`)
     end
