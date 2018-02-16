@@ -42,6 +42,15 @@ module NeuroJulia
         return responseobj
     end
 
+    function get_notebook(filename)
+        directory=homedir * "00_NeuroTemplates"
+        try
+            run(`mkdir $directory`)
+        end
+        output=directory * "/" * split(filename,'.')[1] * "_" * string(Dates.now()) * ".ipynb"
+        run(`curl https://raw.githubusercontent.com/SnowdenNeuroverse/NeuroNotebooks/master/notebooks/$filename --output $output`)
+    end
+
     include(Pkg.dir() * "/NeuroJulia/src/NeuroData.jl")
     include(Pkg.dir() * "/NeuroJulia/src/NeuroAdmin.jl")
 end # module
