@@ -49,7 +49,7 @@ module NeuroJulia
         end
         filename=split(filename,'.')[1] * ".ipynb"
         output=directory * "/" * split(filename,'.')[1] * "_" * replace(split(string(Dates.now()),'.')[1],':','_') * ".ipynb"
-        run(`curl https://raw.githubusercontent.com/SnowdenNeuroverse/NeuroNotebooks/master/notebooks/$filename --output $output`)
+        run(`curl https://raw.githubusercontent.com/SnowdenNeuroverse/NeuroNotebooks/master/Notebooks/$filename --output $output`)
     end
 
     include(Pkg.dir() * "/NeuroJulia/src/NeuroData.jl")
