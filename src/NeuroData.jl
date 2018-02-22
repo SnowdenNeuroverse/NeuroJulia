@@ -64,14 +64,16 @@ module NeuroData
         while keeplooping
             if isfile(filepath)
                 sleep(0.25)
-                open(filepath) do jsondata
-                    d = JSON.parse(readstring(jsondata))
-                    if d["Error"] == nothing
-                        keeplooping=false
-                    else
-                        error("Neuroverse error: " * d["Error"])
-                    end
+                jsondata = open(filepath)
+                d = JSON.parse(readstring(jsondata))
+                if d["Error"] == nothing
+                    keeplooping=false
+                else
+                    close(jsondata)
+                    rm(filepath)
+                    error("Neuroverse error: " * d["Error"])
                 end
+                close(jsondata)
             end
             sleep(0.25)
         end
