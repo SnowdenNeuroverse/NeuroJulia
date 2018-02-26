@@ -122,28 +122,28 @@ module NeuroData
         ColumnDataTypeScale
         ColumnDataTypeSize
         Index::Int
-        function DestinationTableDefinitionColumn(;ColumnName="",ColumnDataType="",ColumnType="",IsRequired=false)
+        function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false)
             col=new()
             col.ColumnDataTypePrecision=nothing
             col.ColumnDataTypeScale=nothing
             col.ColumnDataTypeSize=nothing
 
-            col.ColumnName=ColumnName
-            col.ColumnType=col_type_map[ColumnType]
-            col.IsRequired=IsRequired
+            col.ColumnName=name
+            col.ColumnType=col_type_map[columntype]
+            col.IsRequired=isrequired
             col.IsSystemColumn=false
             col.ValidationError=""
             col.WasRemoved=false
 
-            if contains(ColumnDataType,"Int")
+            if contains(datatype,"Int")
                 col.ColumnDataType=data_type_map["Int"]
-            elseif contains(ColumnDataType,"String")
+            elseif contains(datatype,"String")
                 col.ColumnDataType=data_type_map["String"]
-                col.ColumnDataTypeSize=parse(split(ColumnDataType,['(',')',','])[2])
-            elseif contains(ColumnDataType,"Decimal")
+                col.ColumnDataTypeSize=parse(split(datatype,['(',')',','])[2])
+            elseif contains(datatype,"Decimal")
                 col.ColumnDataType=data_type_map["Decimal"]
-                col.ColumnDataTypePrecision=parse(split(ColumnDataType,['(',')',','])[2])
-                col.ColumnDataTypeScale=parse(split(ColumnDataType,['(',')',','])[3])
+                col.ColumnDataTypePrecision=parse(split(datatype,['(',')',','])[2])
+                col.ColumnDataTypeScale=parse(split(datatype,['(',')',','])[3])
             end 
             return col
         end
@@ -161,14 +161,14 @@ module NeuroData
         MappingsCount::Int
         SchemaError::Bool
         StorageType::Int
-        function DestinationTableDefinition(;AllowDataLossChanges=false,DestinationTableDefinitionColumns=nothing,
-            DestinationTableName=nothing, DestinationTableDefinitionIndexes=DestinationTableDefinitionIndex[])
+        function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
+            name=nothing)
             for ind=1:length(DestinationTableDefinitionColumns)
                 DestinationTableDefinitionColumns[ind].Index=ind
             end
             CreateDate=string(Dates.now())
             CreatedBy=NeuroJulia.neurocall("security","getSamsLicenses",nothing)["UserInfo"]["UserId" ]
-           return new(AllowDataLossChanges,CreatedBy,CreateDate,DestinationTableDefinitionColumns,DestinationTableDefinitionIndexes,DestinationTableName,CreatedBy,CreateDate,0,false,1) 
+           return new(allowdatachanges,CreatedBy,CreateDate,columns,DestinationTableDefinitionIndex[],name,CreatedBy,CreateDate,0,false,1) 
         end
     end
 
