@@ -163,8 +163,8 @@ module NeuroData
         StorageType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
             name=nothing)
-            for ind=1:length(DestinationTableDefinitionColumns)
-                DestinationTableDefinitionColumns[ind].Index=ind
+            for ind=1:length(columns)
+                columns[ind].Index=ind
             end
             CreateDate=string(Dates.now())
             CreatedBy=NeuroJulia.neurocall("security","getSamsLicenses",nothing)["UserInfo"]["UserId" ]
