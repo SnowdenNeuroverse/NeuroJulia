@@ -18,7 +18,7 @@ module NeuroJulia
     end
     global homedir = "/home/jovyan/session/"
 
-    function neurocall(service,method,requestbody)
+    function neurocall(service,method,requestbody;timeout=1200)
         url = domain * ":8080/NeuroApi/" * service * "service/api/" * service * "/" * method
         msgdata = nothing
         msgdatalength = 0
@@ -27,7 +27,7 @@ module NeuroJulia
             msgdatalength = length(msgdata)
         end
         headers = Dict("Content-Length" => string(msgdatalength), "Token" => token, "Accept" => "application/json", "Content-Type" => "application/json")
-        response = post(url; headers=headers, data=msgdata)
+        response = post(url; headers=headers, data=msgdata, timeout=timout)
         if response.status != 200
             if response.status == 401
                 error("Session has expired: Log into Neuroverse and connect to your Notebooks session or reload the Notebooks page in Neuroverse")
