@@ -27,7 +27,7 @@ module NeuroJulia
             msgdatalength = length(msgdata)
         end
         headers = Dict("Content-Length" => string(msgdatalength), "Token" => token, "Accept" => "application/json", "Content-Type" => "application/json")
-        response = post(url; headers=headers, data=msgdata, timeout=timout)
+        response = post(url; headers=headers, data=msgdata, timeout=timeout)
         if response.status != 200
             if response.status == 401
                 error("Session has expired: Log into Neuroverse and connect to your Notebooks session or reload the Notebooks page in Neuroverse")
