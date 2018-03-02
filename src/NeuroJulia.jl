@@ -8,7 +8,8 @@ module NeuroJulia
     global token = ENV["JUPYTER_TOKEN"]
     global domain = ENV["NV_DOMAIN"]
     domain = if contains(domain,"prd")
-        "https://neuroverse.com.au"
+        #"https://neuroverse.com.au"
+        "https://15ded47f-ef38-4ee3-b989-685820ca3d36.cloudapp.net"
     elseif contains(domain,"tst")
         "https://launchau.snowdenonline.com.au"
     elseif contains(domain,"sit")
@@ -27,7 +28,7 @@ module NeuroJulia
             msgdatalength = length(msgdata)
         end
         headers = Dict("Content-Length" => string(msgdatalength), "Token" => token, "Accept" => "application/json", "Content-Type" => "application/json")
-        response = post(url; headers=headers, data=msgdata, timeout=timeout)
+        response = post(url; headers=headers, data=msgdata, timeout=timeout, tls_conf=MbedTLS.SSLConfig(false))
         if response.status != 200
             if response.status == 401
                 error("Session has expired: Log into Neuroverse and connect to your Notebooks session or reload the Notebooks page in Neuroverse")
