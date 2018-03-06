@@ -121,8 +121,8 @@ module NeuroData
         ColumnDataTypePrecision
         ColumnDataTypeScale
         ColumnDataTypeSize
-        ForeignKeyTableName::String
-        ForeignKeyColumnName::String
+        ForeignKeyTableName
+        ForeignKeyColumnName
         Index::Int
         function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false)
             col=new()
