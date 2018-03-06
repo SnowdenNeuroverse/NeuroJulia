@@ -124,19 +124,17 @@ module NeuroData
         ForeignKeyTableName::String
         ForeignKeyColumnName::String
         Index::Int
-        function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false,foreign_key_table_name=nothing,
-        foreign_key_column_name=nothing)
+        function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false)
             col=new()
             col.ColumnDataTypePrecision=nothing
             col.ColumnDataTypeScale=nothing
             col.ColumnDataTypeSize=nothing
+            col.ForeignKeyTableName=nothing
+            col.ForeignKeyColumnName=nothing
 
             col.ColumnName=name
             col.ColumnType=col_type_map[columntype]
-            if col.ColumnType==2
-                col.ForeignKeyTableName=foreign_key_table_name
-                col.ForeignKeyColumnName=foreign_key_column_name
-            end
+
             col.IsRequired=isrequired
             col.IsSystemColumn=false
             col.ValidationError=""
@@ -149,6 +147,10 @@ module NeuroData
                 col.ColumnDataType=data_type_map["Decimal"]
                 col.ColumnDataTypePrecision=parse(split(datatype,['(',')',','])[2])
                 col.ColumnDataTypeScale=parse(split(datatype,['(',')',','])[3])
+            elseif contains(datatype,"ForeignKey")
+                col.ColumnDataType=data_type_map["ForeignKey"]
+                col.ForeignKeyTableName=split(datatype,['(',')',','])[2]
+                col.ForeignKeyColumnName=split(datatype,['(',')',','])[3]
             else
                 col.ColumnDataType=data_type_map[datatype]
             end 
