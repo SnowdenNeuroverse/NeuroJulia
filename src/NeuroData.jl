@@ -133,7 +133,14 @@ module NeuroData
             col.ForeignKeyColumnName=nothing
 
             col.ColumnName=name
-            col.ColumnType=col_type_map[columntype]
+        
+            if contains(columntype,"ForeignKey")
+                col.ColumnType=col_type_map["ForeignKey"]
+                col.ForeignKeyTableName=split(columntype,['(',')',','])[2]
+                col.ForeignKeyColumnName=split(columntype,['(',')',','])[3]
+            else
+                col.ColumnType=col_type_map[columntype]
+            end
 
             col.IsRequired=isrequired
             col.IsSystemColumn=false
@@ -147,10 +154,6 @@ module NeuroData
                 col.ColumnDataType=data_type_map["Decimal"]
                 col.ColumnDataTypePrecision=parse(split(datatype,['(',')',','])[2])
                 col.ColumnDataTypeScale=parse(split(datatype,['(',')',','])[3])
-            elseif contains(datatype,"ForeignKey")
-                col.ColumnDataType=data_type_map["ForeignKey"]
-                col.ForeignKeyTableName=split(datatype,['(',')',','])[2]
-                col.ForeignKeyColumnName=split(datatype,['(',')',','])[3]
             else
                 col.ColumnDataType=data_type_map[datatype]
             end 
