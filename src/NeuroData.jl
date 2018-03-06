@@ -103,8 +103,8 @@ module NeuroData
         return df
     end
 
-    data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14)
-    col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4)
+    data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14,"BigInt"=>1,"Boolean"=>3,"DateTime"=>6,"UniqueIdentifier"=>22)
+    col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4,"TimeStampKey"=>3,"ForeignKey"=>2)
 
     type DestinationTableDefinitionIndex
         Index::Int
@@ -121,29 +121,41 @@ module NeuroData
         ColumnDataTypePrecision
         ColumnDataTypeScale
         ColumnDataTypeSize
+        ForeignKeyTableName
+        ForeignKeyColumnName
         Index::Int
         function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false)
             col=new()
             col.ColumnDataTypePrecision=nothing
             col.ColumnDataTypeScale=nothing
             col.ColumnDataTypeSize=nothing
+            col.ForeignKeyTableName=nothing
+            col.ForeignKeyColumnName=nothing
 
             col.ColumnName=name
-            col.ColumnType=col_type_map[columntype]
+        
+            if contains(columntype,"ForeignKey")
+                col.ColumnType=col_type_map["ForeignKey"]
+                col.ForeignKeyTableName=split(columntype,['(',')',','])[2]
+                col.ForeignKeyColumnName=split(columntype,['(',')',','])[3]
+            else
+                col.ColumnType=col_type_map[columntype]
+            end
+
             col.IsRequired=isrequired
             col.IsSystemColumn=false
             col.ValidationError=""
             col.WasRemoved=false
 
-            if contains(datatype,"Int")
-                col.ColumnDataType=data_type_map["Int"]
-            elseif contains(datatype,"String")
+            if contains(datatype,"String")
                 col.ColumnDataType=data_type_map["String"]
                 col.ColumnDataTypeSize=parse(split(datatype,['(',')',','])[2])
             elseif contains(datatype,"Decimal")
                 col.ColumnDataType=data_type_map["Decimal"]
                 col.ColumnDataTypePrecision=parse(split(datatype,['(',')',','])[2])
                 col.ColumnDataTypeScale=parse(split(datatype,['(',')',','])[3])
+            else
+                col.ColumnDataType=data_type_map[datatype]
             end 
             return col
         end
@@ -172,7 +184,66 @@ module NeuroData
         end
     end
 
-    function CreateDestinationTableDefinition(table_def::DestinationTableDefinition)
+    function create_destination_table(table_def::DestinationTableDefinition)
         NeuroJulia.neurocall("datapopulation","CreateDestinationTableDefinition",table_def)
+    end
+
+    type GetDestinationTableDefinitionRequest
+        TableName
+    end
+
+    function get_table_definition(;tablename=nothing)
+        request=GetDestinationTableDefinitionRequest(tablename)
+        table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
+        cols=NeuroData.DestinationTableDefinitionColumn[]
+        for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
+            if col["ColumnName"]!="LastUpdated"
+                tmp_col=NeuroData.DestinationTableDefinitionColumn(name=col["ColumnName"],
+                        datatype="Int",
+                        columntype="Value",
+                        isrequired=col["IsRequired"])
+
+                tmp_col.ColumnDataTypeScale=col["ColumnDataTypeScale"]
+                tmp_col.ColumnDataType=col["ColumnDataType"]
+                tmp_col.ColumnDataTypePrecision=col["ColumnDataTypePrecision"]
+                tmp_col.ColumnDataTypeSize=col["ColumnDataTypeSize"]
+                tmp_col.ColumnType=col["ColumnType"]
+                push!(cols,tmp_col)
+            end
+        end
+        cols
+        new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
+        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"])
+        return new_table_def
+    end
+
+    function save_table_definition(;tabledef=nothing,filename=nothing)
+        def=JSON.json(tabledef)
+        file=open(filename,"w+")
+        write(file,def)
+        close(file)
+    end
+
+    function load_table_definition(;filename=nothing)
+        file=open(filename)
+        table_def=JSON.parse(readstring(file))
+        close(file)
+        cols=NeuroData.DestinationTableDefinitionColumn[]
+        for col in table_def["DestinationTableDefinitionColumns"]
+            tmp_col=NeuroData.DestinationTableDefinitionColumn(name=col["ColumnName"],
+                    datatype="Int",
+                    columntype="Value",
+                    isrequired=col["IsRequired"])
+
+            tmp_col.ColumnDataTypeScale=col["ColumnDataTypeScale"]
+            tmp_col.ColumnDataType=col["ColumnDataType"]
+            tmp_col.ColumnDataTypePrecision=col["ColumnDataTypePrecision"]
+            tmp_col.ColumnDataTypeSize=col["ColumnDataTypeSize"]
+            tmp_col.ColumnType=col["ColumnType"]
+            push!(cols,tmp_col)
+        end
+        cols
+        new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
+        columns=cols,name=table_def["DestinationTableName"])
     end
 end
