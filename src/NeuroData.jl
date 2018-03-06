@@ -172,7 +172,66 @@ module NeuroData
         end
     end
 
-    function CreateDestinationTableDefinition(table_def::DestinationTableDefinition)
+    function create_destination_table(table_def::DestinationTableDefinition)
         NeuroJulia.neurocall("datapopulation","CreateDestinationTableDefinition",table_def)
+    end
+
+    type GetDestinationTableDefinitionRequest
+        TableName
+    end
+
+    function get_table_definition(;tablename=nothing)
+        request=GetDestinationTableDefinitionRequest(tablename)
+        table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
+        cols=NeuroData.DestinationTableDefinitionColumn[]
+        for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
+            if col["ColumnName"]!="LastUpdated"
+                tmp_col=NeuroData.DestinationTableDefinitionColumn(name=col["ColumnName"],
+                        datatype="Int",
+                        columntype="Value",
+                        isrequired=col["IsRequired"])
+
+                tmp_col.ColumnDataTypeScale=col["ColumnDataTypeScale"]
+                tmp_col.ColumnDataType=col["ColumnDataType"]
+                tmp_col.ColumnDataTypePrecision=col["ColumnDataTypePrecision"]
+                tmp_col.ColumnDataTypeSize=col["ColumnDataTypeSize"]
+                tmp_col.ColumnType=col["ColumnType"]
+                push!(cols,tmp_col)
+            end
+        end
+        cols
+        new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
+        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"])
+        return new_table_def
+    end
+
+    function save_table_definition(;tabledef=nothing,filename=nothing)
+        def=JSON.json(tabledef)
+        file=open(filename,"w+")
+        write(file,def)
+        close(file)
+    end
+
+    function load_table_definition(;filename=nothing)
+        file=open(filename)
+        table_def=JSON.parse(readstring(file))
+        close(file)
+        cols=NeuroData.DestinationTableDefinitionColumn[]
+        for col in table_def["DestinationTableDefinitionColumns"]
+            tmp_col=NeuroData.DestinationTableDefinitionColumn(name=col["ColumnName"],
+                    datatype="Int",
+                    columntype="Value",
+                    isrequired=col["IsRequired"])
+
+            tmp_col.ColumnDataTypeScale=col["ColumnDataTypeScale"]
+            tmp_col.ColumnDataType=col["ColumnDataType"]
+            tmp_col.ColumnDataTypePrecision=col["ColumnDataTypePrecision"]
+            tmp_col.ColumnDataTypeSize=col["ColumnDataTypeSize"]
+            tmp_col.ColumnType=col["ColumnType"]
+            push!(cols,tmp_col)
+        end
+        cols
+        new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
+        columns=cols,name=table_def["DestinationTableName"])
     end
 end
