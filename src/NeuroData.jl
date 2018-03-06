@@ -103,8 +103,8 @@ module NeuroData
         return df
     end
 
-    data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14)
-    col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4)
+    data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14,"BigInt"=>1,"Boolean"=>3,"DateTime"=>6,"UniqueIdentifier"=>22)
+    col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4,"TimeStampKey"=>3,"ForeignKey"=>2)
 
     type DestinationTableDefinitionIndex
         Index::Int
@@ -121,8 +121,11 @@ module NeuroData
         ColumnDataTypePrecision
         ColumnDataTypeScale
         ColumnDataTypeSize
+        ForeignKeyTableName::String
+        ForeignKeyColumnName::String
         Index::Int
-        function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false)
+        function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false,foreign_key_table_name=nothing,
+        foreign_key_column_name=nothing)
             col=new()
             col.ColumnDataTypePrecision=nothing
             col.ColumnDataTypeScale=nothing
@@ -130,20 +133,24 @@ module NeuroData
 
             col.ColumnName=name
             col.ColumnType=col_type_map[columntype]
+            if col.ColumnType==2
+                col.ForeignKeyTableName=foreignkeytablename
+                col.ForeignKeyColumnName=foreignkeycolumn
+            end
             col.IsRequired=isrequired
             col.IsSystemColumn=false
             col.ValidationError=""
             col.WasRemoved=false
 
-            if contains(datatype,"Int")
-                col.ColumnDataType=data_type_map["Int"]
-            elseif contains(datatype,"String")
+            if contains(datatype,"String")
                 col.ColumnDataType=data_type_map["String"]
                 col.ColumnDataTypeSize=parse(split(datatype,['(',')',','])[2])
             elseif contains(datatype,"Decimal")
                 col.ColumnDataType=data_type_map["Decimal"]
                 col.ColumnDataTypePrecision=parse(split(datatype,['(',')',','])[2])
                 col.ColumnDataTypeScale=parse(split(datatype,['(',')',','])[3])
+            else
+                col.ColumnDataType=data_type_map[datatype]
             end 
             return col
         end
