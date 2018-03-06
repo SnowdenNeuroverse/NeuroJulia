@@ -134,8 +134,8 @@ module NeuroData
             col.ColumnName=name
             col.ColumnType=col_type_map[columntype]
             if col.ColumnType==2
-                col.ForeignKeyTableName=foreignkeytablename
-                col.ForeignKeyColumnName=foreignkeycolumn
+                col.ForeignKeyTableName=foreign_key_table_name
+                col.ForeignKeyColumnName=foreign_key_column_name
             end
             col.IsRequired=isrequired
             col.IsSystemColumn=false
