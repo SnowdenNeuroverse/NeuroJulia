@@ -246,4 +246,48 @@ module NeuroData
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
         columns=cols,name=table_def["DestinationTableName"])
     end
+
+    type DataPopulationMappingSourceColumn
+        DestinationColumnInfo::Dict{String,Any}
+        DestinationColumnName::String
+        IsMapped::Bool
+        SourceColumnName::String
+    end
+
+    type DataPopulationMappingRequest
+        DataPopulationMappingSourceColumns
+        DestinationTableDefinitionId
+        MappingName
+        function DataPopulationMappingRequest(tableId,columns,mappingname)
+            new(columns,tableId,mappingname)
+        end
+    end
+
+    function create_table_mapping(;tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array(Tuple{String,String},0))
+        #source_dest_name_pairs=Array{Tuple{String,String},1})
+        request=NeuroData.GetDestinationTableDefinitionRequest(tablename)
+        table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
+        columns=DataPopulationMappingSourceColumn[]
+        for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
+            if col["ColumnName"]!="LastUpdated"
+                ismapped=false
+                if findfirst(notmapped,col["ColumnName"])==0
+                    ismapped=true
+                end
+
+                destcolumnname=col["ColumnName"]
+                sourcecolumnname=destcolumnname
+                if length(source_dest_name_pairs)>0
+                   sourcecolumnname=source_dest_name_pairs[findfirst(map(x->x[2],source_dest_name_pairs))][1]
+                end
+
+                push!(columns,DataPopulationMappingSourceColumn(
+                col,destcolumnname,ismapped,sourcecolumnname))
+            end
+        end
+
+        data=DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
+        NeuroJulia.neurocall("DataPopulation","CreateDataPopulationMapping",data)
+    end
+
 end
