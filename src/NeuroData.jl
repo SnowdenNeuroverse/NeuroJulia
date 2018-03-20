@@ -107,7 +107,16 @@ module NeuroData
     col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4,"TimeStampKey"=>3,"ForeignKey"=>2)
 
     type DestinationTableDefinitionIndex
-        Index::Int
+        IndexName::String
+        #ColumnName:____
+        IndexColumns::Array{Dict{String,String},1}
+        function DestinationTableDefinitionIndex(;indexname="",indexcolumns=Array(String,0))
+            cols=Array(Dict{String,String},0)
+            foreach col in indexcolumns
+                push!(cols,Dict("ColumnName"=>col))
+            end
+            new(indexname,cols)
+        end
     end
 
     type DestinationTableDefinitionColumn
@@ -174,13 +183,18 @@ module NeuroData
         SchemaError::Bool
         StorageType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
-            name=nothing)
+            name=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
             CreateDate=string(Dates.now())
             CreatedBy=NeuroJulia.neurocall("security","getSamsLicenses",nothing)["UserInfo"]["UserId" ]
-           return new(allowdatachanges,CreatedBy,CreateDate,columns,DestinationTableDefinitionIndex[],name,CreatedBy,CreateDate,0,false,1) 
+        
+            indexes=DestinationTableDefinitionIndex[]
+            if tableindexes!=nothing
+                indexes=tableindexes
+            end
+           return new(allowdatachanges,CreatedBy,CreateDate,columns,indexes,name,CreatedBy,CreateDate,0,false,1) 
         end
     end
 
