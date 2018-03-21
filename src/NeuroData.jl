@@ -237,7 +237,7 @@ module NeuroData
     function add_destination_table_indexes(;tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
         request=GetDestinationTableDefinitionRequest(tablename)
         table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
-        append!(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionIndexes"],tableindexes)
+        append!(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionIndexes"],JSON.parse(JSON.json(tableindexes)))
         table_def
     end
 
