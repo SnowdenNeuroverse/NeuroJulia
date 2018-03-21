@@ -234,7 +234,7 @@ module NeuroData
         return new_table_def
     end
 
-    function add_destination_table_indexes(tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
+    function add_destination_table_indexes(;tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
         table_def=get_table_definition(tablename=tablename)
         append!(table_def.DestinationTableDefinitionIndexes,tableindexes)
         table_def
