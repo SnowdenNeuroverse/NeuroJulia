@@ -183,7 +183,7 @@ module NeuroData
         SchemaError::Bool
         StorageType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
-            name=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
+            name=nothing,tableindexes=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
