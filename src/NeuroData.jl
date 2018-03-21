@@ -238,7 +238,7 @@ module NeuroData
         request=GetDestinationTableDefinitionRequest(tablename)
         table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
         append!(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionIndexes"],JSON.parse(JSON.json(tableindexes)))
-        table_def
+        NeuroJulia.neurocall("datapopulation","UpdateDestinationTableDefinition",table_def)
     end
 
     function save_table_definition(;tabledef=nothing,filename=nothing)
