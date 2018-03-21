@@ -294,7 +294,7 @@ module NeuroData
         #source_dest_name_pairs=Array{Tuple{String,String},1})
         request=NeuroData.GetDestinationTableDefinitionRequest(tablename)
         table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
-        columns=DataPopulationMappingSourceColumn[]
+        columns=NeuroData.DataPopulationMappingSourceColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
             if col["ColumnName"]!="LastUpdated"
                 if findfirst(notmapped,col["ColumnName"])==0
@@ -302,16 +302,19 @@ module NeuroData
                     destcolumnname=col["ColumnName"]
                     sourcecolumnname=destcolumnname
                     if length(source_dest_name_pairs)>0
-                       sourcecolumnname=source_dest_name_pairs[findfirst(map(x->x[2],source_dest_name_pairs),destcolumnname)][1]
+                       tmp_ind=findfirst(map(x->x[2],source_dest_name_pairs),destcolumnname)
+                        if tmp_ind>0
+                            sourcecolumnname=source_dest_name_pairs[findfirst(map(x->x[2],source_dest_name_pairs),destcolumnname)][1]
+                        end
                     end
 
-                    push!(columns,DataPopulationMappingSourceColumn(
+                    push!(columns,NeuroData.DataPopulationMappingSourceColumn(
                     col,destcolumnname,ismapped,sourcecolumnname))
                 end
             end
         end
 
-        data=DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
+        data=NeuroData.DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
         NeuroJulia.neurocall("DataPopulation","CreateDataPopulationMapping",data)
     end
 
