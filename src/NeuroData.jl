@@ -225,9 +225,12 @@ module NeuroData
                 push!(cols,tmp_col)
             end
         end
-        cols
+        indexes=DestinationTableDefinitionIndex[]
+        for ind in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionIndexes"]
+            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
+        end
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"])
+        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes)
         return new_table_def
     end
 
@@ -256,9 +259,12 @@ module NeuroData
             tmp_col.ColumnType=col["ColumnType"]
             push!(cols,tmp_col)
         end
-        cols
+        indexes=DestinationTableDefinitionIndex[]
+        for ind in table_def["DestinationTableDefinitionIndexes"]
+            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
+        end
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableName"])
+        columns=cols,name=table_def["DestinationTableName"],tableindexes=indexes)
     end
 
     type DataPopulationMappingSourceColumn
