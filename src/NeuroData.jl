@@ -297,19 +297,17 @@ module NeuroData
         columns=DataPopulationMappingSourceColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
             if col["ColumnName"]!="LastUpdated"
-                ismapped=false
                 if findfirst(notmapped,col["ColumnName"])==0
                     ismapped=true
-                end
+                    destcolumnname=col["ColumnName"]
+                    sourcecolumnname=destcolumnname
+                    if length(source_dest_name_pairs)>0
+                       sourcecolumnname=source_dest_name_pairs[findfirst(map(x->x[2],source_dest_name_pairs),destcolumnname)][1]
+                    end
 
-                destcolumnname=col["ColumnName"]
-                sourcecolumnname=destcolumnname
-                if length(source_dest_name_pairs)>0
-                   sourcecolumnname=source_dest_name_pairs[findfirst(map(x->x[2],source_dest_name_pairs))][1]
+                    push!(columns,DataPopulationMappingSourceColumn(
+                    col,destcolumnname,ismapped,sourcecolumnname))
                 end
-
-                push!(columns,DataPopulationMappingSourceColumn(
-                col,destcolumnname,ismapped,sourcecolumnname))
             end
         end
 
