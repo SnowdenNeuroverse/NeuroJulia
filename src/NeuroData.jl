@@ -107,7 +107,16 @@ module NeuroData
     col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4,"TimeStampKey"=>3,"ForeignKey"=>2)
 
     type DestinationTableDefinitionIndex
-        Index::Int
+        IndexName::String
+        #ColumnName:____
+        IndexColumns::Array{Dict{String,String},1}
+        function DestinationTableDefinitionIndex(;indexname="",indexcolumns=Array(String,0))
+            cols=Array(Dict{String,String},0)
+            for col in indexcolumns
+                push!(cols,Dict("ColumnName"=>col))
+            end
+            new(indexname,cols)
+        end
     end
 
     type DestinationTableDefinitionColumn
@@ -174,13 +183,18 @@ module NeuroData
         SchemaError::Bool
         StorageType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
-            name=nothing)
+            name=nothing,tableindexes=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
             CreateDate=string(Dates.now())
             CreatedBy=NeuroJulia.neurocall("security","getSamsLicenses",nothing)["UserInfo"]["UserId" ]
-           return new(allowdatachanges,CreatedBy,CreateDate,columns,DestinationTableDefinitionIndex[],name,CreatedBy,CreateDate,0,false,1) 
+        
+            indexes=DestinationTableDefinitionIndex[]
+            if tableindexes!=nothing
+                indexes=tableindexes
+            end
+           return new(allowdatachanges,CreatedBy,CreateDate,columns,indexes,name,CreatedBy,CreateDate,0,false,1) 
         end
     end
 
@@ -211,10 +225,20 @@ module NeuroData
                 push!(cols,tmp_col)
             end
         end
-        cols
+        indexes=DestinationTableDefinitionIndex[]
+        for ind in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionIndexes"]
+            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
+        end
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"])
+        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes)
         return new_table_def
+    end
+
+    function add_destination_table_indexes(;tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
+        request=GetDestinationTableDefinitionRequest(tablename)
+        table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)["DestinationTableDefinitions"][1]
+        append!(table_def["DestinationTableDefinitionIndexes"],JSON.parse(JSON.json(tableindexes)))
+        NeuroJulia.neurocall("datapopulation","UpdateDestinationTableDefinition",table_def)
     end
 
     function save_table_definition(;tabledef=nothing,filename=nothing)
@@ -242,9 +266,12 @@ module NeuroData
             tmp_col.ColumnType=col["ColumnType"]
             push!(cols,tmp_col)
         end
-        cols
+        indexes=DestinationTableDefinitionIndex[]
+        for ind in table_def["DestinationTableDefinitionIndexes"]
+            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
+        end
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableName"])
+        columns=cols,name=table_def["DestinationTableName"],tableindexes=indexes)
     end
 
     type DataPopulationMappingSourceColumn
@@ -267,26 +294,27 @@ module NeuroData
         #source_dest_name_pairs=Array{Tuple{String,String},1})
         request=NeuroData.GetDestinationTableDefinitionRequest(tablename)
         table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
-        columns=DataPopulationMappingSourceColumn[]
+        columns=NeuroData.DataPopulationMappingSourceColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
             if col["ColumnName"]!="LastUpdated"
-                ismapped=false
                 if findfirst(notmapped,col["ColumnName"])==0
                     ismapped=true
-                end
+                    destcolumnname=col["ColumnName"]
+                    sourcecolumnname=destcolumnname
+                    if length(source_dest_name_pairs)>0
+                       tmp_ind=findfirst(map(x->x[2],source_dest_name_pairs),destcolumnname)
+                        if tmp_ind>0
+                            sourcecolumnname=source_dest_name_pairs[findfirst(map(x->x[2],source_dest_name_pairs),destcolumnname)][1]
+                        end
+                    end
 
-                destcolumnname=col["ColumnName"]
-                sourcecolumnname=destcolumnname
-                if length(source_dest_name_pairs)>0
-                   sourcecolumnname=source_dest_name_pairs[findfirst(map(x->x[2],source_dest_name_pairs))][1]
+                    push!(columns,NeuroData.DataPopulationMappingSourceColumn(
+                    col,destcolumnname,ismapped,sourcecolumnname))
                 end
-
-                push!(columns,DataPopulationMappingSourceColumn(
-                col,destcolumnname,ismapped,sourcecolumnname))
             end
         end
 
-        data=DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
+        data=NeuroData.DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
         NeuroJulia.neurocall("DataPopulation","CreateDataPopulationMapping",data)
     end
 
