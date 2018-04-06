@@ -110,8 +110,8 @@ module NeuroData
         IndexName::String
         #ColumnName:____
         IndexColumns::Array{Dict{String,String},1}
-        function DestinationTableDefinitionIndex(;indexname="",indexcolumns=Array(String,0))
-            cols=Array(Dict{String,String},0)
+        function DestinationTableDefinitionIndex(;indexname="",indexcolumns=Array{String}(0))
+            cols=Array{Dict{String,String}}(0)
             for col in indexcolumns
                 push!(cols,Dict("ColumnName"=>col))
             end
@@ -290,7 +290,7 @@ module NeuroData
         end
     end
 
-    function create_table_mapping(;tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array(Tuple{String,String},0))
+    function create_table_mapping(;tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array{Tuple{String,String}}(0))
         #source_dest_name_pairs=Array{Tuple{String,String},1})
         request=NeuroData.GetDestinationTableDefinitionRequest(tablename)
         table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
