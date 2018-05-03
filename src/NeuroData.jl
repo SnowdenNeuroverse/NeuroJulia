@@ -2,6 +2,7 @@ module NeuroData
     using NeuroJulia
     using DataFrames
     using JSON
+    using CSV
 
     type SqlQuery
         SourceMappingType
@@ -98,7 +99,12 @@ module NeuroData
         tr = TransferFromSqlToFileShareRequest(fs,sqlquery)
         outputname=sqltofileshare(tr)
         folder=NeuroJulia.homedir * fs.FolderPath
-        df = readtable(folder * outputname)
+        file=open(folder * outputname)
+        str=readline(file)
+        tmp=split(str,",")
+        headers=String[replace(tmp[col],"\0","") for col=1:length(tmp)]
+        close(file)
+        df=CSV.read(folder * outputname,header=headers,datarow=2)
         rm(folder * outputname)
         return df
     end
