@@ -53,7 +53,7 @@ module NeuroData
     end
 
     function sqltofileshare(transferfromsqltofilesharerequest)
-        service = "datamovement"
+        service = "datamovementservice"
         method = "TransferFromSqlToFileShare"
         responseobj = NeuroJulia.neurocall(service,method,transferfromsqltofilesharerequest)
         if responseobj["Error"] != nothing
@@ -179,34 +179,48 @@ module NeuroData
 
     type DestinationTableDefinition
         AllowDataLossChanges::Bool
-        CreatedBy::String
-        CreatedDate::String
+        #CreatedBy::String
+        #CreatedDate::String
         DestinationTableDefinitionColumns::Array{DestinationTableDefinitionColumn,1}
         DestinationTableDefinitionIndexes::Array{DestinationTableDefinitionIndex,1}
         DestinationTableName::String
-        LastChangedBy::String
-        LastChangedDate::String
-        MappingsCount::Int
-        SchemaError::Bool
-        StorageType::Int
+        #LastChangedBy::String
+        #LastChangedDate::String
+        #MappingsCount::Int
+        #SchemaError::Bool
+        #StorageType::Int
+        DataStoreId::String
+        SchemaType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
-            name=nothing,tableindexes=nothing)
+            name=nothing,tableindexes=nothing,storename=nothing,schematype=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
-            CreateDate=string(Dates.now())
-            CreatedBy=NeuroJulia.neurocall("security","getSamsLicenses",nothing)["UserInfo"]["UserId" ]
-        
+            schematypeid=0
+            if schematype=="Data Ingestion"
+                schematypeid=1
+            elseif schematype=="Time Series"
+                schematypeid=2
+            elseif schematype=="Processed"
+                schematypeid=3
+            else
+                error("schematype must be \"Data Ingestion\", \"Time Series\" or \"Processed\"")
+            end
+            try
+                datastoreid=NeuroJulia.neurocall("datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
+            catch
+                error("Data Store name is not valid")
+            end
             indexes=DestinationTableDefinitionIndex[]
             if tableindexes!=nothing
                 indexes=tableindexes
             end
-           return new(allowdatachanges,CreatedBy,CreateDate,columns,indexes,name,CreatedBy,CreateDate,0,false,1) 
+           return new(allowdatachanges,columns,indexes,name,datastoreid,schematypeid) 
         end
     end
 
     function create_destination_table(table_def::DestinationTableDefinition)
-        NeuroJulia.neurocall("datapopulation","CreateDestinationTableDefinition",table_def)
+        NeuroJulia.neurocall("datapopulationservice","CreateDestinationTableDefinition",table_def)
     end
 
     type GetDestinationTableDefinitionRequest
@@ -215,7 +229,7 @@ module NeuroData
 
     function get_table_definition(;tablename=nothing)
         request=GetDestinationTableDefinitionRequest(tablename)
-        table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
+        table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)
         cols=NeuroData.DestinationTableDefinitionColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
             if col["ColumnName"]!="LastUpdated"
@@ -243,9 +257,9 @@ module NeuroData
 
     function add_destination_table_indexes(;tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
         request=GetDestinationTableDefinitionRequest(tablename)
-        table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)["DestinationTableDefinitions"][1]
+        table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)["DestinationTableDefinitions"][1]
         append!(table_def["DestinationTableDefinitionIndexes"],JSON.parse(JSON.json(tableindexes)))
-        NeuroJulia.neurocall("datapopulation","UpdateDestinationTableDefinition",table_def)
+        NeuroJulia.neurocall("datapopulationservice","UpdateDestinationTableDefinition",table_def)
     end
 
     function save_table_definition(;tabledef=nothing,filename=nothing)
@@ -300,7 +314,7 @@ module NeuroData
     function create_table_mapping(;tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array{Tuple{String,String}}(0))
         #source_dest_name_pairs=Array{Tuple{String,String},1})
         request=NeuroData.GetDestinationTableDefinitionRequest(tablename)
-        table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
+        table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)
         columns=NeuroData.DataPopulationMappingSourceColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
             if col["ColumnName"]!="LastUpdated"
@@ -322,7 +336,7 @@ module NeuroData
         end
 
         data=NeuroData.DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
-        NeuroJulia.neurocall("DataPopulation","CreateDataPopulationMapping",data)
+        NeuroJulia.neurocall("DataPopulationService","CreateDataPopulationMapping",data)
     end
 
 end
