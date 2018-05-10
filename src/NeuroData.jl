@@ -49,6 +49,7 @@ module NeuroData
     type TransferFromSqlToFileShareRequest
         FileShareDestinationDefinition::DestinationFolder
         SqlSourceDefinition::SqlQuery
+        StoreName::String
     end
 
     function sqltofileshare(transferfromsqltofilesharerequest)
@@ -82,21 +83,21 @@ module NeuroData
         return responseobj["FileName"]
     end
 
-    function sqltocsv(;folderpath=nothing,filename=nothing,sqlquery=nothing)
+    function sqltocsv(;folderpath=nothing,filename=nothing,sqlquery=nothing,storename=nothing)
         fs=DestinationFolder(folderpath)
         folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
             error("File exists: " * folder * filename)
         end
-        tr = TransferFromSqlToFileShareRequest(fs,sqlquery)
+        tr = TransferFromSqlToFileShareRequest(fs,sqlquery,storename)
         outputname=sqltofileshare(tr)
         mv(folder * outputname, folder * filename)
         return folder * filename
     end
 
-    function sqltodf(;sqlquery=nothing)
+    function sqltodf(;sqlquery=nothing,storename=nothing)
         fs=DestinationFolder(nothing)
-        tr = TransferFromSqlToFileShareRequest(fs,sqlquery)
+        tr = TransferFromSqlToFileShareRequest(fs,sqlquery,storename)
         outputname=sqltofileshare(tr)
         folder=NeuroJulia.homedir * fs.FolderPath
         file=open(folder * outputname)
