@@ -105,7 +105,11 @@ module NeuroData
         tmp=split(str,",")
         headers=String[replace(tmp[col],"\0","") for col=1:length(tmp)]
         close(file)
-        df=CSV.read(folder * outputname,header=headers,datarow=2)
+        try
+            df=CSV.read(folder * outputname,header=headers,datarow=2)
+        catch
+            error("Table has no data")
+        end
         rm(folder * outputname)
         return df
     end
