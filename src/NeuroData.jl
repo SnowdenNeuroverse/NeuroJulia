@@ -231,10 +231,17 @@ module NeuroData
 
     type GetDestinationTableDefinitionRequest
         TableName
+        DataStoreId
     end
 
-    function get_table_definition(;tablename=nothing)
-        request=GetDestinationTableDefinitionRequest(tablename)
+    function get_table_definition(;tablename=nothing,storename=nothing)
+        datastoreid=nothing
+        try
+            datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
+        catch
+            error("Data Store name is not valid")
+        end
+        request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
         table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)
         cols=NeuroData.DestinationTableDefinitionColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
@@ -256,8 +263,18 @@ module NeuroData
         for ind in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionIndexes"]
             push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
         end
+    
+        schematype=""
+        if schematypeid==1
+            schematype="Data Ingestion"
+        elseif schematypeid==2
+            schematype="Time Series"
+        elseif schematypeid==3
+            schematype="Processed"
+        end
+    
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes)
+        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes,storename=storename,schematype=schematype)
         return new_table_def
     end
 
