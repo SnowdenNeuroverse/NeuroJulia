@@ -216,7 +216,7 @@ module NeuroData
                     error("schematype must be \"Data Ingestion\", \"Time Series\" or \"Processed\"")
                 end
             end
-            datastoreid==nothing
+            datastoreid=nothing
             indexes=DestinationTableDefinitionIndex[]
             if tableindexes!=nothing
                 indexes=tableindexes
