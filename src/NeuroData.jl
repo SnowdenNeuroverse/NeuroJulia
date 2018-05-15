@@ -210,6 +210,7 @@ module NeuroData
             else
                 error("schematype must be \"Data Ingestion\", \"Time Series\" or \"Processed\"")
             end
+            datastoreid=""
             try
                 datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
             catch
