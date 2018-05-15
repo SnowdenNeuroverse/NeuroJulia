@@ -15,7 +15,8 @@ module NeuroData
         GroupByClause
         HavingClause
         OrderByClause
-        function SqlQuery(;select=nothing,tablename=nothing,subquery=nothing,alias=nothing,joins=nothing,where=nothing,groupby=nothing,having=nothing,orderby=nothing)
+        function SqlQuery(;select::String=nothing,tablename::String=nothing,subquery::SqlQuery=nothing,alias::String=nothing,
+            joins::Array{SqlJoin,1}=nothing,where::String=nothing,groupby::String=nothing,having::String=nothing,orderby::String=nothing)
             return new(1,select,tablename,subquery,alias,joins,where,groupby,having,orderby)
         end
     end
@@ -83,7 +84,7 @@ module NeuroData
         return responseobj["FileName"]
     end
 
-    function sqltocsv(;folderpath=nothing,filename=nothing,sqlquery=nothing,storename=nothing)
+    function sqltocsv(storename::String,sqlquery::SqlQuery;folderpath::String=nothing,filename::String=nothing)
         fs=DestinationFolder(folderpath)
         folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
@@ -95,7 +96,7 @@ module NeuroData
         return folder * filename
     end
 
-    function sqltodf(;sqlquery=nothing,storename=nothing)
+    function sqltodf(storename::String,sqlquery::SqlQuery)
         fs=DestinationFolder(nothing)
         tr = TransferFromSqlToFileShareRequest(fs,sqlquery,storename)
         outputname=sqltofileshare(tr)
@@ -122,7 +123,7 @@ module NeuroData
         IndexName::String
         #ColumnName:____
         IndexColumns::Array{Dict{String,String},1}
-        function DestinationTableDefinitionIndex(;indexname="",indexcolumns=Array{String}(0))
+        function DestinationTableDefinitionIndex(indexname::String,indexcolumnnames::Array{String,1})
             cols=Array{Dict{String,String}}(0)
             for col in indexcolumns
                 push!(cols,Dict("ColumnName"=>col))
@@ -197,7 +198,7 @@ module NeuroData
         DataStoreId::String
         SchemaType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
-            name=nothing,tableindexes=nothing,storename=nothing,schematype=nothing,datastoreid=nothing,schematypeid=nothing)
+            name=nothing,tableindexes=nothing,schematype=nothing,schematypeid=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
@@ -212,13 +213,7 @@ module NeuroData
                     error("schematype must be \"Data Ingestion\", \"Time Series\" or \"Processed\"")
                 end
             end
-            if datastoreid==nothing
-                try
-                    datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
-                catch
-                    error("Data Store name is not valid")
-                end
-            end
+            datastoreid==nothing
             indexes=DestinationTableDefinitionIndex[]
             if tableindexes!=nothing
                 indexes=tableindexes
@@ -227,7 +222,15 @@ module NeuroData
         end
     end
 
-    function create_destination_table(table_def::DestinationTableDefinition)
+    function create_destination_table(storename,table_def::DestinationTableDefinition)
+        datastoreid=""
+        try
+            datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
+        catch
+            error("Data Store name is not valid")
+        end
+
+        table_def.DataStoreId=datastoreid
         NeuroJulia.neurocall("datapopulationservice","CreateDestinationTableDefinition",table_def)
     end
 
