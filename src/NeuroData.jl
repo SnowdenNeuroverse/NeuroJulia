@@ -197,25 +197,27 @@ module NeuroData
         DataStoreId::String
         SchemaType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
-            name=nothing,tableindexes=nothing,storename=nothing,schematype=nothing)
+            name=nothing,tableindexes=nothing,storename=nothing,schematype=nothing,datastoreid=nothing,schematypeid=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
-            schematypeid=0
-            if schematype=="Data Ingestion"
-                schematypeid=1
-            elseif schematype=="Time Series"
-                schematypeid=2
-            elseif schematype=="Processed"
-                schematypeid=3
-            else
-                error("schematype must be \"Data Ingestion\", \"Time Series\" or \"Processed\"")
+            if schematypeid==nothing
+                if schematype=="Data Ingestion"
+                    schematypeid=1
+                elseif schematype=="Time Series"
+                    schematypeid=2
+                elseif schematype=="Processed"
+                    schematypeid=3
+                else
+                    error("schematype must be \"Data Ingestion\", \"Time Series\" or \"Processed\"")
+                end
             end
-            datastoreid=""
-            try
-                datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
-            catch
-                error("Data Store name is not valid")
+            if datastoreid==nothing
+                try
+                    datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
+                catch
+                    error("Data Store name is not valid")
+                end
             end
             indexes=DestinationTableDefinitionIndex[]
             if tableindexes!=nothing
@@ -278,8 +280,14 @@ module NeuroData
         return new_table_def
     end
 
-    function add_destination_table_indexes(;tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
-        request=GetDestinationTableDefinitionRequest(tablename)
+    function add_destination_table_indexes(;storename=nothing,tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
+        datastoreid=nothing
+        try
+            datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
+        catch
+            error("Data Store name is not valid")
+        end    
+        request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
         table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)["DestinationTableDefinitions"][1]
         append!(table_def["DestinationTableDefinitionIndexes"],JSON.parse(JSON.json(tableindexes)))
         NeuroJulia.neurocall("datapopulationservice","UpdateDestinationTableDefinition",table_def)
@@ -314,8 +322,12 @@ module NeuroData
         for ind in table_def["DestinationTableDefinitionIndexes"]
             push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
         end
+    
+        datastoreid=table_def.DataStoreId
+        schematypeid=table_def.SchemaType
+    
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableName"],tableindexes=indexes)
+        columns=cols,name=table_def["DestinationTableName"],tableindexes=indexes,datastoreid=datastoreid,schematypeid=schematypeid)
     end
 
     type DataPopulationMappingSourceColumn
