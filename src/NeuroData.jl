@@ -351,9 +351,17 @@ module NeuroData
         end
     end
 
-    function create_table_mapping(;tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array{Tuple{String,String}}(0))
-        #source_dest_name_pairs=Array{Tuple{String,String},1})
-        request=NeuroData.GetDestinationTableDefinitionRequest(tablename)
+    function create_table_mapping(;storename=nothing,tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array{Tuple{String,String}}(0))
+        if storename==nothing
+            error("Supply data store name")
+        end
+        datastoreid=nothing
+        try
+            datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
+        catch
+            error("Data Store name is not valid")
+        end    
+        request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
         table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)
         columns=NeuroData.DataPopulationMappingSourceColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
