@@ -105,6 +105,7 @@ module NeuroData
         tmp=split(str,",")
         headers=String[replace(tmp[col],"\0","") for col=1:length(tmp)]
         close(file)
+        df=[]
         try
             df=CSV.read(folder * outputname,header=headers,datarow=2)
         catch
