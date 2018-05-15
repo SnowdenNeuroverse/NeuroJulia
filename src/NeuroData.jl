@@ -266,6 +266,8 @@ module NeuroData
             push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
         end
     
+        schematypeid=table_def["DestinationTableDefinitions"][1]["SchemaType"]
+    
         schematype=""
         if schematypeid==1
             schematype="Data Ingestion"
@@ -281,6 +283,9 @@ module NeuroData
     end
 
     function add_destination_table_indexes(;storename=nothing,tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
+        if storename==nothing
+            error("Supply data store name")
+        end
         datastoreid=nothing
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
