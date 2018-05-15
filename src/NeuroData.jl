@@ -217,7 +217,7 @@ module NeuroData
         table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
         cols=NeuroData.DestinationTableDefinitionColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
-            if col["ColumnName"]!="NeuroverseLastModified"
+            if col["ColumnName"]!="LastUpdated"
                 tmp_col=NeuroData.DestinationTableDefinitionColumn(name=col["ColumnName"],
                         datatype="Int",
                         columntype="Value",
@@ -302,7 +302,7 @@ module NeuroData
         table_def=NeuroJulia.neurocall("DataPopulation","GetDestinationTableDefinition",request)
         columns=NeuroData.DataPopulationMappingSourceColumn[]
         for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
-            if col["ColumnName"]!="NeuroverseLastModified"
+            if col["ColumnName"]!="LastUpdated"
                 if findfirst(notmapped,col["ColumnName"])==0
                     ismapped=true
                     destcolumnname=col["ColumnName"]
