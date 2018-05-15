@@ -328,8 +328,8 @@ module NeuroData
             push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
         end
     
-        datastoreid=table_def.DataStoreId
-        schematypeid=table_def.SchemaType
+        datastoreid=table_def["DataStoreId"]
+        schematypeid=table_def["SchemaType"]
     
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
         columns=cols,name=table_def["DestinationTableName"],tableindexes=indexes,datastoreid=datastoreid,schematypeid=schematypeid)
