@@ -3,7 +3,7 @@ module NeuroAdmin
     using DataFrames
 
     function getactivesessions()
-        service = "notebookmanagement"
+        service = "notebookmanagementservice"
         method = "getdetailedsessionlist"
         requestbody=nothing
         response = NeuroJulia.neurocall(service,method,requestbody)
