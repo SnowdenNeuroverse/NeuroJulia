@@ -4,8 +4,8 @@ module NeuroData
     using JSON
     using CSV
     
-    abstract type AbstractSqlQuery
-    abstract type AbstractSqlJoin
+    abstract type AbstractSqlQuery end
+    abstract type AbstractSqlJoin end
 
     type SqlQuery <: AbstractSqlQuery
         SourceMappingType::Int
