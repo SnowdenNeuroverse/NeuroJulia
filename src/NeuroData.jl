@@ -3,31 +3,34 @@ module NeuroData
     using DataFrames
     using JSON
     using CSV
+    
+    abstract type AbstractSqlQuery
+    abstract type AbstractSqlJoin
 
-    type SqlQuery
-        SourceMappingType
-        SelectClause
-        FromTableName
-        FromSubQuery
-        FromAlias
-        Joins
-        WhereClause
-        GroupByClause
-        HavingClause
-        OrderByClause
-        function SqlQuery(;select::String=nothing,tablename::String=nothing,subquery::SqlQuery=nothing,alias::String=nothing,
-            joins::Array{SqlJoin,1}=nothing,where::String=nothing,groupby::String=nothing,having::String=nothing,orderby::String=nothing)
+    type SqlQuery <: AbstractSqlQuery
+        SourceMappingType::Int
+        SelectClause::String
+        FromTableName::String
+        FromSubQuery::AbstractSqlQuery
+        FromAlias::String
+        Joins::Array{AbstractSqlJoin,1}
+        WhereClause::String
+        GroupByClause::String
+        HavingClause::String
+        OrderByClause::String
+        function SqlQuery(;select::String=nothing,tablename::String=nothing,subquery::AbstractSqlQuery=nothing,alias::String=nothing,
+            joins::Array{AbstractSqlJoin,1}=nothing,where::String=nothing,groupby::String=nothing,having::String=nothing,orderby::String=nothing)
             return new(1,select,tablename,subquery,alias,joins,where,groupby,having,orderby)
         end
     end
 
-    type SqlJoin
-        JoinType
-        JoinTableName
-        JoinSubQuery
-        JoinAlias
-        JoinClause
-        function SqlJoin(;jointype=nothing,tablename=nothing,subquery=nothing,alias=nothing,clause=nothing)
+    type SqlJoin <: AbstractSqlJoin
+        JoinType::String
+        JoinTableName::String
+        JoinSubQuery::AbstractSqlQuery
+        JoinAlias::String
+        JoinClause::String
+        function SqlJoin(;jointype::String=nothing,tablename::String=nothing,subquery::AbstractSqlQuery=nothing,alias::String=nothing,clause::String=nothing)
             return new(jointype,tablename,subquery,alias,clause)
         end
     end
