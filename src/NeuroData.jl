@@ -225,7 +225,7 @@ module NeuroData
         end
     end
 
-    function create_destination_table(storename,table_def::DestinationTableDefinition)
+    function create_destination_table(storename::String,table_def::DestinationTableDefinition)
         datastoreid=""
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
@@ -242,7 +242,7 @@ module NeuroData
         DataStoreId
     end
 
-    function get_table_definition(;tablename=nothing,storename=nothing)
+    function get_table_definition(storename::String,tablename::String)
         datastoreid=nothing
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
@@ -284,14 +284,11 @@ module NeuroData
         end
     
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes,storename=storename,schematype=schematype)
+        columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes,schematype=schematype)
         return new_table_def
     end
 
-    function add_destination_table_indexes(;storename=nothing,tablename=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
-        if storename==nothing
-            error("Supply data store name")
-        end
+    function add_destination_table_indexes(storename::String,tablename::String,tableindexes::Array{DestinationTableDefinitionIndex,1})
         datastoreid=nothing
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
@@ -304,14 +301,14 @@ module NeuroData
         NeuroJulia.neurocall("datapopulationservice","UpdateDestinationTableDefinition",table_def)
     end
 
-    function save_table_definition(;tabledef=nothing,filename=nothing)
+    function save_table_definition(tabledef::DestinationTableDefinition,filename::String)
         def=JSON.json(tabledef)
         file=open(filename,"w+")
         write(file,def)
         close(file)
     end
 
-    function load_table_definition(;filename=nothing)
+    function load_table_definition(filename::String)
         file=open(filename)
         table_def=JSON.parse(readstring(file))
         close(file)
@@ -338,7 +335,9 @@ module NeuroData
         schematypeid=table_def["SchemaType"]
     
         new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["AllowDataLossChanges"],
-        columns=cols,name=table_def["DestinationTableName"],tableindexes=indexes,datastoreid=datastoreid,schematypeid=schematypeid)
+        columns=cols,name=table_def["DestinationTableName"],tableindexes=indexes,schematypeid=schematypeid)
+        new_table_def.DataStoreId=datastoreid
+        return new_table_def
     end
 
     type DataPopulationMappingSourceColumn
