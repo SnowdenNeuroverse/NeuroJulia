@@ -28,8 +28,10 @@ module NeuroData
         GroupByClause::Union{String,Void}
         HavingClause::Union{String,Void}
         OrderByClause::Union{String,Void}
-        function SqlQuery(;select::String=nothing,tablename::String=nothing,subquery::AbstractSqlQuery=nothing,alias::String=nothing,
-            joins::Array{AbstractSqlJoin,1}=nothing,where::String=nothing,groupby::String=nothing,having::String=nothing,orderby::String=nothing)
+        function SqlQuery(;select::String=nothing,tablename::Union{String,Void}=nothing,subquery::Union{AbstractSqlQuery,Void}=nothing,
+            alias::Union{String,Void}=nothing,
+            joins::Union{Array{AbstractSqlJoin,1},Void}=nothing,where::Union{String,Void}=nothing,groupby::Union{String,Void}=nothing,
+            having::Union{String,Void}=nothing,orderby::Union{String,Void}=nothing)
             return new(1,select,tablename,subquery,alias,joins,where,groupby,having,orderby)
         end
     end
@@ -110,7 +112,7 @@ module NeuroData
         sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,filename::String=val3)
         sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,folderpath::String=val3,filename::String=val4)
     """
-    function sqltocsv(;storename::String=nothing,sqlquery::SqlQuery=nothing,folderpath::String=nothing,filename::String=nothing)
+    function sqltocsv(;storename::String=nothing,sqlquery::SqlQuery=nothing,folderpath::Union{String,Void}=nothing,filename::String=nothing)
         fs=DestinationFolder(folderpath)
         folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
@@ -188,7 +190,7 @@ module NeuroData
         ForeignKeyTableName
         ForeignKeyColumnName
         Index::Int
-        function DestinationTableDefinitionColumn(;name::String="",datatype::String="",columntype::String="",isrequired::Bool=false)
+        function DestinationTableDefinitionColumn(;name::String=nothing,datatype::String=nothing,columntype::String=nothing,isrequired::Bool=false)
             col=new()
             col.ColumnDataTypePrecision=nothing
             col.ColumnDataTypeScale=nothing
@@ -250,8 +252,8 @@ module NeuroData
         DataStoreId::Union{String,Void}
         SchemaType::Int
         function DestinationTableDefinition(;allowdatachanges::Bool=false,columns::Array{DestinationTableDefinitionColumn,1}=nothing,
-            name::String=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing,
-            schematype::String=nothing,schematypeid::Int=nothing)
+            name::String=nothing,tableindexes::Union{Array{DestinationTableDefinitionIndex,1},Void}=nothing,
+            schematype::Union{String,Void}=nothing,schematypeid::Union{Int,Void}=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
