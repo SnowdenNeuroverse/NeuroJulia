@@ -6,7 +6,17 @@ module NeuroData
     
     abstract type AbstractSqlQuery end
     abstract type AbstractSqlJoin end
-
+    
+    """
+        Parameters:
+        select::String,tablename::String,subquery::AbstractSqlQuery,alias::String,
+            joins::Array{AbstractSqlJoin,1},where::String,groupby::String,having::String,orderby::String
+        Required:
+        select
+        tablename or subquery
+        Notes:
+        If a join is supplied an alias must be supplied
+    """
     type SqlQuery <: AbstractSqlQuery
         SourceMappingType::Int
         SelectClause::String
@@ -24,6 +34,16 @@ module NeuroData
         end
     end
 
+
+    """
+        Parameters:
+        jointype::String,tablename::String,subquery::AbstractSqlQuery,alias::String,clause::String
+        Required:
+        jointype
+        tablename or subquery
+        alias
+        clause
+    """
     type SqlJoin <: AbstractSqlJoin
         JoinType::String
         JoinTableName::Union{String,Void}
@@ -86,8 +106,11 @@ module NeuroData
         rm(filepath)
         return responseobj["FileName"]
     end
-
-    function sqltocsv(storename::String,sqlquery::SqlQuery;folderpath::String=nothing,filename::String=nothing)
+    """
+        sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,filename::String=val3)
+        sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,folderpath::String=val3,filename::String=val4)
+    """
+    function sqltocsv(;storename::String=nothing,sqlquery::SqlQuery=nothing,folderpath::String=nothing,filename::String=nothing)
         fs=DestinationFolder(folderpath)
         folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
@@ -226,7 +249,7 @@ module NeuroData
         end
     end
 
-    function create_destination_table(storename::String,table_def::DestinationTableDefinition)
+    function create_destination_table(;storename::String=nothing,table_def::DestinationTableDefinition=nothing)
         datastoreid=""
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
@@ -243,7 +266,7 @@ module NeuroData
         DataStoreId
     end
 
-    function get_table_definition(storename::String,tablename::String)
+    function get_table_definition(;storename::String=nothing,tablename::String=nothing)
         datastoreid=nothing
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
@@ -289,7 +312,7 @@ module NeuroData
         return new_table_def
     end
 
-    function add_destination_table_indexes(storename::String,tablename::String,tableindexes::Array{DestinationTableDefinitionIndex,1})
+    function add_destination_table_indexes(;storename::String=nothing,tablename::String=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
         datastoreid=nothing
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
@@ -302,14 +325,14 @@ module NeuroData
         NeuroJulia.neurocall("datapopulationservice","UpdateDestinationTableDefinition",table_def)
     end
 
-    function save_table_definition(tabledef::DestinationTableDefinition,filename::String)
+    function save_table_definition(;tabledef::DestinationTableDefinition=nothing,filename::String=nothing)
         def=JSON.json(tabledef)
         file=open(filename,"w+")
         write(file,def)
         close(file)
     end
 
-    function load_table_definition(filename::String)
+    function load_table_definition(;filename::String=nothing)
         file=open(filename)
         table_def=JSON.parse(readstring(file))
         close(file)
