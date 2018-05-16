@@ -110,13 +110,13 @@ module NeuroData
     end
     """
         sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,filename::String=val3)
-        sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,folderpath::String=val3,filename::String=val4)
+        sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,folderpathfromroot::String=val3,filename::String=val4)
     """
-    function sqltocsv(;storename::String=nothing,sqlquery::SqlQuery=nothing,folderpath::Union{String,Void}=nothing,filename::String=nothing)
-        if folderpath==nothing
-            folderpath=replace(pwd(),NeuroJulia.homedir,"")
+    function sqltocsv(;storename::String=nothing,sqlquery::SqlQuery=nothing,folderpathfromroot::Union{String,Void}=nothing,filename::String=nothing)
+        if folderpathfromroot==nothing
+            folderpathfromroot=replace(pwd(),NeuroJulia.homedir,"")
         end
-        fs=DestinationFolder(folderpath)
+        fs=DestinationFolder(folderpathfromroot)
         folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
             error("File exists: " * folder * filename)
