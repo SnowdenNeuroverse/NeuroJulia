@@ -99,7 +99,8 @@ module NeuroData
         return folder * filename
     end
 
-    function sqltodf(storename::String=nothing,sqlquery::SqlQuery=nothing)
+    # sqltodf(;storename::String=val1,sqlquery::SqlQuery=val2)
+    function sqltodf(;storename::String=nothing,sqlquery::SqlQuery=nothing)
         fs=DestinationFolder(nothing)
         tr = TransferFromSqlToFileShareRequest(fs,sqlquery,storename)
         outputname=sqltofileshare(tr)
