@@ -10,14 +10,14 @@ module NeuroData
     type SqlQuery <: AbstractSqlQuery
         SourceMappingType::Int
         SelectClause::String
-        FromTableName::String
-        FromSubQuery::AbstractSqlQuery
-        FromAlias::String
-        Joins::Array{AbstractSqlJoin,1}
-        WhereClause::String
-        GroupByClause::String
-        HavingClause::String
-        OrderByClause::String
+        FromTableName::Union{String,Void}
+        FromSubQuery::Union{AbstractSqlQuery,Void}
+        FromAlias::Union{String,Void}
+        Joins::Union{Array{AbstractSqlJoin,1},Void}
+        WhereClause::Union{String,Void}
+        GroupByClause::Union{String,Void}
+        HavingClause::Union{String,Void}
+        OrderByClause::Union{String,Void}
         function SqlQuery(;select::String=nothing,tablename::String=nothing,subquery::AbstractSqlQuery=nothing,alias::String=nothing,
             joins::Array{AbstractSqlJoin,1}=nothing,where::String=nothing,groupby::String=nothing,having::String=nothing,orderby::String=nothing)
             return new(1,select,tablename,subquery,alias,joins,where,groupby,having,orderby)
@@ -26,8 +26,8 @@ module NeuroData
 
     type SqlJoin <: AbstractSqlJoin
         JoinType::String
-        JoinTableName::String
-        JoinSubQuery::AbstractSqlQuery
+        JoinTableName::Union{String,Void}
+        JoinSubQuery::Union{AbstractSqlQuery,Void}
         JoinAlias::String
         JoinClause::String
         function SqlJoin(;jointype::String=nothing,tablename::String=nothing,subquery::AbstractSqlQuery=nothing,alias::String=nothing,clause::String=nothing)
