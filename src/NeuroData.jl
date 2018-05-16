@@ -128,7 +128,7 @@ module NeuroData
         IndexColumns::Array{Dict{String,String},1}
         function DestinationTableDefinitionIndex(indexname::String,indexcolumnnames::Array{String,1})
             cols=Array{Dict{String,String}}(0)
-            for col in indexcolumns
+            for col in indexcolumnnames
                 push!(cols,Dict("ColumnName"=>col))
             end
             new(indexname,cols)
