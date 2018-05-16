@@ -286,7 +286,7 @@ module NeuroData
             error("Data Store name is not valid")
         end
 
-        table_def.DataStoreId=datastoreid
+        tabledefinition.DataStoreId=datastoreid
         NeuroJulia.neurocall("datapopulationservice","CreateDestinationTableDefinition",tabledefinition)
     end
 
@@ -358,7 +358,7 @@ module NeuroData
 
     "save_table_definition(;tabledefinition::DestinationTableDefinition=val1,filename::String=val2)"
     function save_table_definition(;tabledefinition::DestinationTableDefinition=nothing,filename::String=nothing)
-        def=JSON.json(tabledef)
+        def=JSON.json(tabledefinition)
         file=open(filename,"w+")
         write(file,def)
         close(file)
