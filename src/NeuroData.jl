@@ -198,7 +198,7 @@ module NeuroData
         #MappingsCount::Int
         #SchemaError::Bool
         #StorageType::Int
-        DataStoreId::String
+        DataStoreId::Union{String,Void}
         SchemaType::Int
         function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
             name=nothing,tableindexes=nothing,schematype=nothing,schematypeid=nothing)
