@@ -113,6 +113,9 @@ module NeuroData
         sqltocsv(;storename::String=val1,sqlquery::SqlQuery=val2,folderpath::String=val3,filename::String=val4)
     """
     function sqltocsv(;storename::String=nothing,sqlquery::SqlQuery=nothing,folderpath::Union{String,Void}=nothing,filename::String=nothing)
+        if folderpath==nothing
+            folderpath=replace(pwd(),NeuroJulia.homedir,"")
+        end
         fs=DestinationFolder(folderpath)
         folder=NeuroJulia.homedir * fs.FolderPath
         if isfile(folder * filename)
