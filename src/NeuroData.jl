@@ -146,6 +146,13 @@ module NeuroData
     data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14,"BigInt"=>1,"Boolean"=>3,"DateTime"=>6,"UniqueIdentifier"=>22)
     col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4,"TimeStampKey"=>3,"ForeignKey"=>2)
 
+    """
+    Parameters:
+    indexname::String,indexcolumnnames::Array{String,1}
+    Required:
+    indexname
+    indexcolumnnames
+    """
     type DestinationTableDefinitionIndex
         IndexName::String
         #ColumnName:____
@@ -158,7 +165,15 @@ module NeuroData
             new(indexname,cols)
         end
     end
-
+    
+    """
+    Parameters:
+    name::String,datatype::String,columntype::String,isrequired::Bool=false
+    Required:
+    name
+    datatype
+    columntype
+    """
     type DestinationTableDefinitionColumn
         ColumnDataType::Int
         ColumnName::String
@@ -173,7 +188,7 @@ module NeuroData
         ForeignKeyTableName
         ForeignKeyColumnName
         Index::Int
-        function DestinationTableDefinitionColumn(;name="",datatype="",columntype="",isrequired=false)
+        function DestinationTableDefinitionColumn(;name::String="",datatype::String="",columntype::String="",isrequired::Bool=false)
             col=new()
             col.ColumnDataTypePrecision=nothing
             col.ColumnDataTypeScale=nothing
@@ -210,6 +225,16 @@ module NeuroData
         end
     end
 
+    """
+    Parameters:
+    allowdatachanges::Bool=false,columns::Array{DestinationTableDefinitionColumn,1},
+    name::String,tableindexes::Array{DestinationTableDefinitionIndex,1},
+    schematype::String,schematypeid::Int
+    Required:
+    name
+    columns
+    schematype or schematypeid
+    """
     type DestinationTableDefinition
         AllowDataLossChanges::Bool
         #CreatedBy::String
@@ -224,8 +249,9 @@ module NeuroData
         #StorageType::Int
         DataStoreId::Union{String,Void}
         SchemaType::Int
-        function DestinationTableDefinition(;allowdatachanges=false,columns=nothing,
-            name=nothing,tableindexes=nothing,schematype=nothing,schematypeid=nothing)
+        function DestinationTableDefinition(;allowdatachanges::Bool=false,columns::Array{DestinationTableDefinitionColumn,1}=nothing,
+            name::String=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing,
+            schematype::String=nothing,schematypeid::Int=nothing)
             for ind=1:length(columns)
                 columns[ind].Index=ind
             end
@@ -249,6 +275,7 @@ module NeuroData
         end
     end
 
+    "create_destination_table(;storename::String=val1,tabledefinition::DestinationTableDefinition=val2)"
     function create_destination_table(;storename::String=nothing,tabledefinition::DestinationTableDefinition=nothing)
         datastoreid=""
         try
@@ -266,6 +293,7 @@ module NeuroData
         DataStoreId
     end
 
+    "get_table_definition(;storename::String=val1,tablename::String=val2)"
     function get_table_definition(;storename::String=nothing,tablename::String=nothing)
         datastoreid=nothing
         try
@@ -312,6 +340,7 @@ module NeuroData
         return new_table_def
     end
 
+    "add_destination_table_indexes(;storename::String=val1,tablename::String=val2,tableindexes::Array{DestinationTableDefinitionIndex,1}=val3)"
     function add_destination_table_indexes(;storename::String=nothing,tablename::String=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
         datastoreid=nothing
         try
@@ -325,6 +354,7 @@ module NeuroData
         NeuroJulia.neurocall("datapopulationservice","UpdateDestinationTableDefinition",table_def)
     end
 
+    "save_table_definition(;tabledefinition::DestinationTableDefinition=val1,filename::String=val2)"
     function save_table_definition(;tabledefinition::DestinationTableDefinition=nothing,filename::String=nothing)
         def=JSON.json(tabledef)
         file=open(filename,"w+")
@@ -332,6 +362,7 @@ module NeuroData
         close(file)
     end
 
+    "load_table_definition(;filename::String=val1)"
     function load_table_definition(;filename::String=nothing)
         file=open(filename)
         table_def=JSON.parse(readstring(file))
