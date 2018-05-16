@@ -249,7 +249,7 @@ module NeuroData
         end
     end
 
-    function create_destination_table(;storename::String=nothing,table_def::DestinationTableDefinition=nothing)
+    function create_destination_table(;storename::String=nothing,tabledefinition::DestinationTableDefinition=nothing)
         datastoreid=""
         try
             datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
@@ -258,7 +258,7 @@ module NeuroData
         end
 
         table_def.DataStoreId=datastoreid
-        NeuroJulia.neurocall("datapopulationservice","CreateDestinationTableDefinition",table_def)
+        NeuroJulia.neurocall("datapopulationservice","CreateDestinationTableDefinition",tabledefinition)
     end
 
     type GetDestinationTableDefinitionRequest
@@ -325,7 +325,7 @@ module NeuroData
         NeuroJulia.neurocall("datapopulationservice","UpdateDestinationTableDefinition",table_def)
     end
 
-    function save_table_definition(;tabledef::DestinationTableDefinition=nothing,filename::String=nothing)
+    function save_table_definition(;tabledefinition::DestinationTableDefinition=nothing,filename::String=nothing)
         def=JSON.json(tabledef)
         file=open(filename,"w+")
         write(file,def)
