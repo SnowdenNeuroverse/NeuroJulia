@@ -326,7 +326,7 @@ module NeuroData
         end
         indexes=DestinationTableDefinitionIndex[]
         for ind in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionIndexes"]
-            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
+            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumnnames=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
         end
     
         schematypeid=table_def["DestinationTableDefinitions"][1]["SchemaType"]
@@ -388,7 +388,7 @@ module NeuroData
         end
         indexes=DestinationTableDefinitionIndex[]
         for ind in table_def["DestinationTableDefinitionIndexes"]
-            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumns=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
+            push!(indexes,DestinationTableDefinitionIndex(;indexname=ind["IndexName"],indexcolumnnames=[ind["IndexColumns"][i]["ColumnName"] for i = 1:length(ind["IndexColumns"])]))
         end
     
         datastoreid=table_def["DataStoreId"]
