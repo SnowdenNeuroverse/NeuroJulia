@@ -19,7 +19,7 @@ module NeuroAdmin
         df[:Session_TmpStorage] = response["SessionList"]["Session Temporary Storage"]
         return df
     end
-    function getendpointlog(endpointName,startDate,endDate;maxDisplayRows=200)
+    function getendpointlog(endpointName,startDate,endDate)
         endPointResultEnvelope = NeuroJulia.neurocall("8080","endpointmanagementservice","GetEndpoints",nothing)
         endpointId = ""
         for endpoint in endPointResultEnvelope["EndPointInfo"]
