@@ -124,7 +124,7 @@ module NeuroData
         tr = TransferFromSqlToFileShareRequest(fs,sqlquery,storename)
         outputname=sqltofileshare(tr)
         mv(folder * outputname, folder * filename)
-        return folder * filename
+        return replace(folder * filename,NeuroJulia.homedir,"")
     end
 
     "sqltodf(;storename::String=val1,sqlquery::SqlQuery=val2)"
