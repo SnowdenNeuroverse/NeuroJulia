@@ -19,6 +19,10 @@ module NeuroJulia
     end
     global homedir = "/home/jovyan/session/"
 
+    prepo = LibGit2.GitRepo(abspath(Pkg.dir(), "NeuroJulia"))
+    phead = LibGit2.head(prepo)
+    global branchname = LibGit2.shortname(phead)
+
     function neurocall(port,service,method,requestbody;timeout=1200)
         url = domain * ":8080/NeuroApi/" * port * "/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
         msgdata = nothing
@@ -67,14 +71,14 @@ module NeuroJulia
         return responseobj
     end
 
-    function get_notebook(filename;branch="master")
+    function get_notebook(filename)
         directory=homedir * "00_NeuroTemplates"
         try
             run(`mkdir $directory`)
         end
         filename=split(filename,'.')[1] * ".ipynb"
         output=directory * "/" * split(filename,'.')[1] * "_" * replace(split(string(Dates.now()),'.')[1],':','_') * ".ipynb"
-        run(`curl https://raw.githubusercontent.com/SnowdenNeuroverse/NeuroNotebooks/$branch/Notebooks/$filename --output $output`)
+        run(`curl https://raw.githubusercontent.com/SnowdenNeuroverse/NeuroNotebooks/$branchname/Notebooks/$filename --output $output`)
     end
 
     include(Pkg.dir() * "/NeuroJulia/src/NeuroData.jl")
