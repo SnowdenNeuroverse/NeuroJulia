@@ -2,7 +2,7 @@ module NeuroAdmin
     using NeuroJulia
     using DataFrames
 
-    function getactivesessions()
+    function getactivenotebooksessions()
         service = "notebookmanagementservice"
         method = "getdetailedsessionlist"
         requestbody=nothing
@@ -18,5 +18,17 @@ module NeuroAdmin
         df[:Session_Memory] = response["SessionList"]["Session Memory"]
         df[:Session_TmpStorage] = response["SessionList"]["Session Temporary Storage"]
         return df
+    end
+    function getendpointlog(endpointName,startDate,endDate;maxDisplayRows=200)
+        endPointResultEnvelope = NeuroJulia.neurocall("8080","endpointmanagementservice","GetEndpoints",nothing)
+        endpointId = ""
+        for endpoint in endPointResultEnvelope["EndPointInfo"]
+            if endpoint["Name"] == endpointName
+                endpointId = endpoint["EndPointId"]
+            end
+        end
+        request = Dict("EndpointId"=>endpointId,"MessageTypeId"=> "", "EndDate"=>endDate, "StartDate"=>startDate)
+        resultEnvelope = NeuroJulia.neurocall("8080","endpointmanagementservice","GetMonitorLogEntries",request)
+        return resultEnvelope["DataIngestionLogEntries"]
     end
 end
