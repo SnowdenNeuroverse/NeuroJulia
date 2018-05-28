@@ -19,6 +19,7 @@ module NeuroJulia
     end
     global homedir = "/home/jovyan/session/"
 
+
     prepo = LibGit2.GitRepo(abspath(Pkg.dir(), "NeuroJulia"))
     phead = LibGit2.head(prepo)
     global branchname = LibGit2.shortname(phead)
@@ -46,6 +47,7 @@ module NeuroJulia
         end
         return responseobj
     end
+
 
     function neurocall(service,method,requestbody;timeout=1200)
         url = domain * ":8080/NeuroApi/8080/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
