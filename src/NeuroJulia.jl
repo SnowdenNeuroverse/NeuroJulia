@@ -37,6 +37,8 @@ module NeuroJulia
         if response.status != 200
             if response.status == 401
                 error("Session has expired: Log into Neuroverse and connect to your Notebooks session or reload the Notebooks page in Neuroverse")
+            elseif response.status == 404
+                error(replace(lowercase(service),"service","") * "/" * method * " does not exist")
             else
                 error("Neuroverse connection error: Http code " * string(response.status))
             end
