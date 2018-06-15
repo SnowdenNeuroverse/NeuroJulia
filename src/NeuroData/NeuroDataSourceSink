@@ -44,6 +44,11 @@ type CsvDataLakeSourceParameters <: AbstractSourceParameters
     DataStartRow::Int
 end
 
+function Sink2Source(sink::CsvDataLakeSinkParameters,response::StreamResponse)::CsvDataLakeSourceParameters
+    fileName=sink.FolderPath * "/" * response.JobId * "_" * replace(replace(response.TimeStamp,":","-"),".","-") * ".csv"
+    return CsvDataLakeSourceParameters(sink.DataStoreName,sink.TableName,fileName,1)
+end
+
 type CsvDataLakeSinkParameters <: AbstractSinkParameters
     DataStoreName::String
     TableName::String
