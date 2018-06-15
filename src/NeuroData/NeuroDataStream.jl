@@ -1,9 +1,9 @@
-type StreamRequest
+type StreamRequest <: AbstractStreamRequest
     SourceParameters::AbstractSourceParameters
     SinkParameters::AbstractSinkParameters
 end
 
-type StreamResponse
+type StreamResponse <: AbstractStreamResponse
     JobId::String
     TimeStamp::String
 end
