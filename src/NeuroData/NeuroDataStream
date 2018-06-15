@@ -9,7 +9,7 @@ function stream(source::AbstractSourceParameters,sink::AbstractSinkParameters)
     method = replace(string(typeof(source)),"SourceParameters","") * "To" * replace(string(typeof(sink)),"SinkParameters","")
     response = NeuroJulia.neurocall("8080","DataMovementService",method,request)
     
-    check_request=Dict("JobId"=>JSON.parse(readstring(response))["JobId"])
+    check_request=Dict("JobId"=>response["JobId"])
 
     status=0
     errormsg=""
