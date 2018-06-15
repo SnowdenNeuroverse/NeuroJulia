@@ -7,10 +7,6 @@ type SqlSourceParameters <: AbstractSourceParameters
     TableName::String
 end
 
-function Sink2Source(sink::SqlSinkParameters,response::StreamResponse)::SqlSourceParameters
-    return SqlSourceParameters(sink.DataStoreName,sink.TableName)
-end
-
 type SqlSinkParameters <: AbstractSinkParameters
     DataStoreName::String
     TableName::String
@@ -21,16 +17,16 @@ type SqlSinkParameters <: AbstractSinkParameters
     end
 end
 
+function sinktosource(sink::SqlSinkParameters,response::StreamResponse)::SqlSourceParameters
+    return SqlSourceParameters(sink.DataStoreName,sink.TableName)
+end
+
 #-----------NotebookCsv----------------
 type CsvNotebookFileShareSourceParameters <: AbstractSourceParameters
     FileName::String
     DataStartRow::Int
     Headers::Array{String,1}
     Types::Array{String,1}
-end
-
-function Sink2Source(sink::CsvNotebookFileShareSinkParameters,response::StreamResponse)::CsvNotebookFileShareSourceParameters
-    return CsvNotebookFileShareSourceParameters(sink.FileName,2,sink.Headers,sink.Types)
 end
 
 type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
@@ -44,17 +40,16 @@ type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
     end
 end
 
+function sinktosource(sink::CsvNotebookFileShareSinkParameters,response::StreamResponse)::CsvNotebookFileShareSourceParameters
+    return CsvNotebookFileShareSourceParameters(sink.FileName,2,sink.Headers,sink.Types)
+end
+
 #----------DataLakeCsv-----------------
 type CsvDataLakeSourceParameters <: AbstractSourceParameters
     DataStoreName::String
     TableName::String
     FileName::String
     DataStartRow::Int
-end
-
-function Sink2Source(sink::CsvDataLakeSinkParameters,response::StreamResponse)::CsvDataLakeSourceParameters
-    fileName=sink.FolderPath * "/" * response.JobId * "_" * replace(replace(response.TimeStamp,":","-"),".","-") * ".csv"
-    return CsvDataLakeSourceParameters(sink.DataStoreName,sink.TableName,fileName,1)
 end
 
 type CsvDataLakeSinkParameters <: AbstractSinkParameters
@@ -66,6 +61,11 @@ type CsvDataLakeSinkParameters <: AbstractSinkParameters
     function CsvDataLakeSinkParameters(datastorename,tablename,folderpath,expressions=nothing,whereclause=nothing)
         new(datastorename,tablename,folderpath,expressions,whereclause)
     end
+end
+
+function sinktosource(sink::CsvDataLakeSinkParameters,response::StreamResponse)::CsvDataLakeSourceParameters
+    fileName=sink.FolderPath * "/" * response.JobId * "_" * replace(replace(response.TimeStamp,":","-"),".","-") * ".csv"
+    return CsvDataLakeSourceParameters(sink.DataStoreName,sink.TableName,fileName,1)
 end
 
 #----------ExternalSql-------------
