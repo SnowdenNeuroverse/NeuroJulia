@@ -1,6 +1,3 @@
-abstract type AbstractSourceParameters end
-abstract type AbstractSinkParameters end
-
 #-----------Sql-------------------
 type SqlSourceParameters <: AbstractSourceParameters
     DataStoreName::String
