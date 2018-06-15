@@ -12,7 +12,7 @@ type SqlSinkParameters <: AbstractSinkParameters
     TableName::String
     Expressions::Union{Array{String,1},Void}
     WhereClause::Union{String,Void}
-    function SqlSinkParameters(datastorename,tablename,expressions=nothing,whereclause=nothing)
+    function SqlSinkParameters(datastorename,tablename;expressions=nothing,whereclause=nothing)
         new(datastorename,tablename,expressions,whereclause)
     end
 end
@@ -35,7 +35,7 @@ type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
     Types::Array{String,1}
     Expressions::Union{Array{String,1},Void}
     WhereClause::Union{String,Void}
-    function CsvNotebookFileShareSinkParameters(filename,headers,types,expressions=nothing,whereclause=nothing)
+    function CsvNotebookFileShareSinkParameters(filename,headers,types;expressions=nothing,whereclause=nothing)
         new(filename,headers,types,expressions,whereclause)
     end
 end
@@ -58,7 +58,7 @@ type CsvDataLakeSinkParameters <: AbstractSinkParameters
     FolderPath::String
     Expressions::Union{Array{String,1},Void}
     WhereClause::Union{String,Void}
-    function CsvDataLakeSinkParameters(datastorename,tablename,folderpath,expressions=nothing,whereclause=nothing)
+    function CsvDataLakeSinkParameters(datastorename,tablename,folderpath;expressions=nothing,whereclause=nothing)
         new(datastorename,tablename,folderpath,expressions,whereclause)
     end
 end
