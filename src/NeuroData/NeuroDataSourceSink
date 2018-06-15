@@ -1,15 +1,62 @@
 abstract type AbstractSourceParameters end
 abstract type AbstractSinkParameters end
 
-type SqlQuerySourceParameters <: AbstractSourceParameters
+#-----------Sql-------------------
+type SqlSourceParameters <: AbstractSourceParameters
     DataStoreName::String
-    SqlQuery::SqlQuery
+    TableName::String
+end
+
+type SqlSinkParameters <: AbstractSinkParameters
+    DataStoreName::String
+    TableName::String
+    Expressions::Union{Array{String,1},Void}
+    WhereClause::Union{String,Void}
+    function SqlSinkParameters(datastorename,tablename,expressions=nothing,whereclause=nothing)
+        new(datastorename,tablename,expressions,whereclause)
+    end
+end
+
+#-----------NotebookCsv----------------
+type CsvNotebookFileShareSourceParameters <: AbstractSourceParameters
+    FileName::String
+    DataStartRow::Int
+    Headers::Array{String,1}
+    Types::Array{String,1}
 end
 
 type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
-    Headers::Array{String}(1)
-    Types::Array{String}(1)
-    Expressions::Array{String}(1)
-    WhereClause::String
     FileName::String
+    Headers::Array{String,1}
+    Types::Array{String,1}
+    Expressions::Union{Array{String,1},Void}
+    WhereClause::Union{String,Void}
+    function CsvNotebookFileShareSinkParameters(filename,headers,types,expressions=nothing,whereclause=nothing)
+        new(filename,headers,types,expressions,whereclause)
+    end
+end
+
+#----------DataLakeCsv-----------------
+type CsvDataLakeSourceParameters <: AbstractSourceParameters
+    DataStoreName::String
+    TableName::String
+    FileName::String
+    DataStartRow::Int
+end
+
+type CsvDataLakeSinkParameters <: AbstractSinkParameters
+    DataStoreName::String
+    TableName::String
+    FolderPath::String
+    Expressions::Union{Array{String,1},Void}
+    WhereClause::Union{String,Void}
+    function CsvDataLakeSinkParameters(datastorename,tablename,folderpath,expressions=nothing,whereclause=nothing)
+        new(datastorename,tablename,folderpath,expressions,whereclause)
+    end
+end
+
+#----------ExternalSql-------------
+type ExternalSqlSourceParameters <: AbstractSourceParameters
+    TableName::String
+    ConnectionString::String
 end
