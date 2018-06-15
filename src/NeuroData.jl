@@ -2,7 +2,8 @@
     Streams:
         Functions:
             - stream(source,sink) returns StreamResponse
-            - getdatatypes
+            - sinktosource(sink,streamresponse)
+            - getdatatypes()
         Source types:
             - SqlSourceParameters
             - CsvNotebookFileShareSourceParameters 
