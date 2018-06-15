@@ -4,7 +4,7 @@ type DataLakeDeleteFileRequest
     TableName::String
     FilePath::String
 end
-function deletedatalakefile(datastorename::String,tablename::String,filepath::String)
+function deletedatalakefile!(datastorename::String,tablename::String,filepath::String)
     request=DataLakeDeleteFileRequest(datastorename,tablename,filepath)
     NeuroJulia.neurocall("8080","DataMovementService","DataLakeDeleteFile",request)
     return nothing
