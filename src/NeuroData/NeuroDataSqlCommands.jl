@@ -46,7 +46,7 @@ type SqlTransformationRequest
     SqlTransformationParameters
     SinkTableName::String
 end
-function sqltransformation(datastorename::String,sqlquery::SqlQuery,sinktablename=::String)
+function sqltransformation(datastorename::String,sqlquery::SqlQuery,sinktablename::String)
     request=SqlTransformationRequest(Dict("DataStoreName"=>datastorename,"SqlQuery"=>sqlquery),sinktablename)
     response=NeuroJulia.neurocall("8080","DataMovementService","SqlTransformation",request)
     return StreamResponse(response["JobId"],response["TimeStamp"])
