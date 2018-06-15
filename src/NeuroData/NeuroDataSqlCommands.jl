@@ -5,10 +5,10 @@ function sqltodf(datastorename::String,sqlquery::SqlQuery)
     end
     filename=string(Base.Random.uuid1())
     folderpathfromroot="tmp"
-    csvfile=sqltocsv(datastorename,sqlquery,filename,folderpathfromroot=folderpathfromroot)
+    csvfile=sqltocsv(datastorename,sqlquery,filename,folderpathfromroot)
     df=[]
     try
-        df=CSV.read(NeuroJulia.homedir * csvfile,header=headers,datarow=2)
+        df=CSV.read(NeuroJulia.homedir * csvfile)
     catch
         error("Table has no data")
     end
