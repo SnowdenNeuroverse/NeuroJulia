@@ -17,7 +17,7 @@ type SqlSinkParameters <: AbstractSinkParameters
     end
 end
 
-function sinktosource(sink::SqlSinkParameters,response::StreamResponse)::SqlSourceParameters
+function sinktosource(sink::SqlSinkParameters,response::AbstractStreamResponse)::SqlSourceParameters
     return SqlSourceParameters(sink.DataStoreName,sink.TableName)
 end
 
@@ -40,7 +40,7 @@ type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
     end
 end
 
-function sinktosource(sink::CsvNotebookFileShareSinkParameters,response::StreamResponse)::CsvNotebookFileShareSourceParameters
+function sinktosource(sink::CsvNotebookFileShareSinkParameters,response::AbstractStreamResponse)::CsvNotebookFileShareSourceParameters
     return CsvNotebookFileShareSourceParameters(sink.FileName,2,sink.Headers,sink.Types)
 end
 
@@ -63,7 +63,7 @@ type CsvDataLakeSinkParameters <: AbstractSinkParameters
     end
 end
 
-function sinktosource(sink::CsvDataLakeSinkParameters,response::StreamResponse)::CsvDataLakeSourceParameters
+function sinktosource(sink::CsvDataLakeSinkParameters,response::AbstractStreamResponse)::CsvDataLakeSourceParameters
     fileName=sink.FolderPath * "/" * response.JobId * "_" * replace(replace(response.TimeStamp,":","-"),".","-") * ".csv"
     return CsvDataLakeSourceParameters(sink.DataStoreName,sink.TableName,fileName,1)
 end
