@@ -13,7 +13,7 @@ function sqltodf(datastorename::String,sqlquery::SqlQuery)
         error("Table has no data")
     end
     
-    rm((NeuroJulia.homedir * csvfile)
+    rm(NeuroJulia.homedir * csvfile)
     return df
 end
 
