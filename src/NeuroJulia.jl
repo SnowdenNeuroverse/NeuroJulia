@@ -14,8 +14,10 @@ module NeuroJulia
         "https://launchau.snowdenonline.com.au"
     elseif contains(domain,"sit")
         "https://neurosit.snowdenonline.com.au"
-    else
+    elseif contains(domain,"dev")
         "https://neurodev.snowdenonline.com.au"
+    else
+        "http://localhost"
     end
     global homedir = "/home/jovyan/session/"
 
