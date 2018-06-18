@@ -28,6 +28,9 @@ module NeuroJulia
 
     function neurocall(port,service,method,requestbody;timeout=1200)
         url = domain * ":8080/NeuroApi/" * port * "/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
+        if domain=="http://localhost"
+            url = domain * ":8082/NeuroApi/" * port * "/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
+        end
         msgdata = nothing
         msgdatalength = 0
         if requestbody!=nothing
