@@ -36,7 +36,7 @@ function stream(source::AbstractSourceParameters,sink::AbstractSinkParameters)::
     NeuroJulia.neurocall("8080","DataMovementService","FinaliseJob",check_request)
 
     if status!=1
-        error(errormsg)
+        error("Neuroverse error: " * errormsg)
     end
     
     return StreamResponse(response["JobId"],response["TimeStamp"])
