@@ -11,7 +11,13 @@ end
 function stream(source::AbstractSourceParameters,sink::AbstractSinkParameters)::StreamResponse
     request=StreamRequest(source,sink)
 
-    method = replace(string(typeof(source)),"SourceParameters","") * "To" * replace(string(typeof(sink)),"SinkParameters","")
+    sourcelist=split(string(typeof(source)),'.')
+    sourcename=replace(sourcelist[length(sourcelist)],"SourceParameters","")
+    
+    sinklist=split(string(typeof(sink)),'.')
+    sinkname=replace(sinklist[length(sinklist)],"SinkParameters","")
+    
+    method = sourcename * "To" * sinkname
     response = NeuroJulia.neurocall("8080","DataMovementService",method,request)
     
     check_request=Dict("JobId"=>response["JobId"])
