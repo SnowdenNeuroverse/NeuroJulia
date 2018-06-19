@@ -1,9 +1,15 @@
 #-----------Sql-------------------
+"""
+    function SqlSourceParameters(datastorename::String,tablename::String)
+"""
 type SqlSourceParameters <: AbstractSourceParameters
     DataStoreName::String
     TableName::String
 end
 
+"""
+    function SqlSinkParameters(datastorename::String,tablename::String;expressions::Union{Array{String,1},Void}=nothing,whereclause::Union{String,Void}=nothing)
+"""
 type SqlSinkParameters <: AbstractSinkParameters
     DataStoreName::String
     TableName::String
@@ -19,6 +25,10 @@ function sinktosource(sink::SqlSinkParameters,response::AbstractStreamResponse):
 end
 
 #-----------NotebookCsv----------------
+"""
+    function CsvNotebookFileShareSourceParameters(filename::String,datastartrow::Int,headers::Array{String,1},types::Array{String,1})
+    Source and Sink data types can be found through NeuroData.getdatatypes()
+"""
 type CsvNotebookFileShareSourceParameters <: AbstractSourceParameters
     FileName::String
     DataStartRow::Int
@@ -26,6 +36,10 @@ type CsvNotebookFileShareSourceParameters <: AbstractSourceParameters
     Types::Array{String,1}
 end
 
+"""
+    function CsvNotebookFileShareSinkParameters(filename::String,headers::Array{String,1},types::Array{String,1};expressions::Union{Array{String,1},Void}=nothing,whereclause::Union{String,Void}=nothing)
+    Source and Sink data types can be found through NeuroData.getdatatypes()
+"""
 type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
     FileName::String
     Headers::Array{String,1}
@@ -42,6 +56,9 @@ function sinktosource(sink::CsvNotebookFileShareSinkParameters,response::Abstrac
 end
 
 #----------DataLakeCsv-----------------
+"""
+    function CsvDataLakeSourceParameters(datastorename::String,tablename::String,filename::String,datastartrow::String)
+"""
 type CsvDataLakeSourceParameters <: AbstractSourceParameters
     DataStoreName::String
     TableName::String
@@ -49,6 +66,9 @@ type CsvDataLakeSourceParameters <: AbstractSourceParameters
     DataStartRow::Int
 end
 
+"""
+    function CsvDataLakeSinkParameters(datastorename::String,tablename::String,folderpath::String;expressions::Union{Array{String,1},Void}=nothing,whereclause::Union{String,Void}=nothing)
+"""
 type CsvDataLakeSinkParameters <: AbstractSinkParameters
     DataStoreName::String
     TableName::String
@@ -66,6 +86,9 @@ function sinktosource(sink::CsvDataLakeSinkParameters,response::AbstractStreamRe
 end
 
 #----------ExternalSql-------------
+"""
+    function ExternalSqlSourceParameters(tablename::String,connectionstring::String)
+"""
 type ExternalSqlSourceParameters <: AbstractSourceParameters
     TableName::String
     ConnectionString::String
