@@ -4,12 +4,13 @@
             - stream(source,sink) returns StreamResponse
             - sinktosource(sink,streamresponse)
             - getdatatypes()
-        Source types:
+        Types:
+            Sources:
             - SqlSourceParameters
             - CsvNotebookFileShareSourceParameters 
             - CsvDataLakeSourceParameters 
             - ExternalSqlSourceParameters 
-        Sink types:
+            Sinks:
             - SqlSinkParameters 
             - CsvNotebookFileShareSinkParameters 
             - CsvDataLakeSinkParameters 
@@ -34,6 +35,10 @@
             - save_table_definition(;tabledefinition::DestinationTableDefinition=nothing,filename::String=nothing)
             - load_table_definition(;filename::String=nothing)
             - create_table_mapping(;storename=nothing,tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array{Tuple{String,String}}(0))
+        Types:
+            - DestinationTableDefinitionColumn
+            - DestinationTableDefinition
+            - DestinationTableDefinitionIndex
 """
 
 module NeuroData
