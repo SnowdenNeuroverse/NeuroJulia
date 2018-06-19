@@ -82,9 +82,9 @@ end
 
 """
 Parameters:
-allowdatachanges::Bool=false,columns::Array{DestinationTableDefinitionColumn,1},
-name::String,tableindexes::Array{DestinationTableDefinitionIndex,1},
-schematype::String,schematypeid::Int
+function DestinationTableDefinition(;allowdatachanges::Bool=false,columns::Array{DestinationTableDefinitionColumn,1}=nothing,
+        name::String=nothing,tableindexes::Union{Array{DestinationTableDefinitionIndex,1},Void}=nothing,
+        schematype::Union{String,Void}=nothing,schematypeid::Union{Int,Void}=nothing,filepath::Union{String,Void}=nothing)
 Required:
 name
 columns
