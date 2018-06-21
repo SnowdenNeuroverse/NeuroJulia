@@ -4,7 +4,7 @@ type DataLakeDeleteFileRequest
     TableName::String
     FilePath::String
 end
-function deletedatalakefile!(datastorename::String,tablename::String,filename_including_partition::String)
+function delete_datalake_file!(datastorename::String,tablename::String,filename_including_partition::String)
     table_def=get_table_definition(storename=datastorename,tablename=tablename)
     schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
     folderpath=lowercase("/managed/$schematype/table/$tablename/")
