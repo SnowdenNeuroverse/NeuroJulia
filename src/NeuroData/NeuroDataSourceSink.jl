@@ -62,17 +62,23 @@ end
 
 #----------DataLakeCsv-----------------
 """
-    function CsvDataLakeSourceParameters(datastorename::String,tablename::String,filename::String,datastartrow::String)
+    function CsvDataLakeSourceParameters(datastorename::String,tablename::String,filename_including_partition::String,datastartrow::Int)
 """
 type CsvDataLakeSourceParameters <: AbstractSourceParameters
     DataStoreName::String
     TableName::String
     FileName::String
     DataStartRow::Int
+    function CsvDataLakeSourceParameters(datastorename,tablename,filename_including_partition,datastartrow)
+        table_def=get_table_definition(storename=datastorename,tablename=tablename)
+        schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
+        filename=lowercase("/managed/$schematype/table/"*strip(filename_including_partition,'/'))
+        new(datastorename,tablename,filename,datastartrow)
+    end
 end
 
 """
-    function CsvDataLakeSinkParameters(datastorename::String,tablename::String,folderpath::String;expressions::Union{Array{String,1},Void}=nothing,whereclause::Union{String,Void}=nothing)
+    function CsvDataLakeSinkParameters(datastorename::String,tablename::String,partitionpath::String;expressions::Union{Array{String,1},Void}=nothing,whereclause::Union{String,Void}=nothing)
 """
 type CsvDataLakeSinkParameters <: AbstractSinkParameters
     DataStoreName::String
@@ -80,7 +86,10 @@ type CsvDataLakeSinkParameters <: AbstractSinkParameters
     FolderPath::String
     Expressions::Union{Array{String,1},Void}
     WhereClause::Union{String,Void}
-    function CsvDataLakeSinkParameters(datastorename,tablename,folderpath;expressions=nothing,whereclause=nothing)
+    function CsvDataLakeSinkParameters(datastorename,tablename,partitionpath;expressions=nothing,whereclause=nothing)
+        table_def=get_table_definition(storename=datastorename,tablename=tablename)
+        schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
+        folderpath=lowercase("/managed/$schematype/table/"*strip(partitionpath,'/'))
         new(datastorename,tablename,folderpath,expressions,whereclause)
     end
 end
