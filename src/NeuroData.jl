@@ -25,8 +25,8 @@
             - SqlJoin
     Datalake commands:
         Functions:
-            - deletedatalakefile!(datastorename::String,tablename::String,filepath::String)
-            - listdatalaketablefiles(datastorename::String,tablename::String)
+            - deletedatalakefile!(datastorename::String,tablename::String,filename_including_partition::String)
+            - listdatalaketablefileswithpartitions(datastorename::String,tablename::String)
     Schema manager commands:
         Functions:
             - create_destination_table(;storename::String=nothing,tabledefinition::DestinationTableDefinition=nothing)
