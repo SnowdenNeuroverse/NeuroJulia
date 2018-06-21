@@ -307,22 +307,21 @@ function create_table_mapping(;storename=nothing,tablename=nothing,mappingname=n
     NeuroJulia.neurocall("DataPopulationService","CreateDataPopulationMapping",data)
 end
 
-
-function create_processed_table!(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::String="")
+"create_processed_table!(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::Union{String,Void}=nothing)"
+function create_processed_table!(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::Union{String,Void}=nothing)
     schematype="Processed"
     
     columns=NeuroData.DestinationTableDefinitionColumn[]
     for col=1:length(columnnames)
         push!(columns,NeuroData.DestinationTableDefinitionColumn(;name=columnnames[col],datatype=columntypes[col],columntype="Value",isrequired=true)
     end
-    
-    partitionpath=strip(partitionpath,'/')
+
     table_def=NeuroData.DestinationTableDefinition(;allowdatachanges=false,columns=columns,
-            name=tablename,schematype=schematype,filepath="/Managed/$schematype/Table/$tablename/$partitionpath")
+            name=tablename,schematype=schematype,filepath=partitionpath)
 
     NeuroData.create_destination_table(storename=datastorename,tabledefinition=table_def)
 end
-
+"delete_processed_table!(datastorename::String,tablename::String)"
 function delete_processed_table!(datastorename::String,tablename::String)
     table_def=get_table_definition(storename=datastorename,tablename=tablename)
     if table_def.SchemaType!=3
