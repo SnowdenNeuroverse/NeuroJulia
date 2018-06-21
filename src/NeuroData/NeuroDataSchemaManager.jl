@@ -317,7 +317,7 @@ function create_processed_table!(datastorename::String,tablename::String,columnn
     end
 
     table_def=NeuroData.DestinationTableDefinition(;allowdatachanges=false,columns=columns,
-            name=tablename,schematype=schematype,filepath=partitionpath)
+            name=tablename,schematype=schematype,partitionpath=partitionpath)
 
     NeuroData.create_destination_table(storename=datastorename,tabledefinition=table_def)
 end
