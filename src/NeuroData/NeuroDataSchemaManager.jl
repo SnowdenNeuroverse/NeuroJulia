@@ -162,6 +162,11 @@ function get_table_definition(;storename::String=nothing,tablename::String=nothi
     end
     request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
     table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)
+    
+    if length(table_def["DestinationTableDefinitions"])==0
+        error("Table doesn't exist")
+    end
+    
     cols=NeuroData.DestinationTableDefinitionColumn[]
     for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
         if col["ColumnName"]!="NeuroverseLastModified"
