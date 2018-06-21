@@ -129,7 +129,7 @@ type DestinationTableDefinition
         if tableindexes!=nothing
             indexes=tableindexes
         end
-       return new(allowdatachanges,columns,indexes,name,datastoreid,schematypeid,partitionpath) 
+       return new("",allowdatachanges,columns,indexes,name,datastoreid,schematypeid,partitionpath) 
     end
 end
 
