@@ -313,7 +313,7 @@ function create_processed_table!(datastorename::String,tablename::String,columnn
     
     columns=NeuroData.DestinationTableDefinitionColumn[]
     for col=1:length(columnnames)
-        push!(columns,NeuroData.DestinationTableDefinitionColumn(;name=columnnames[col],datatype=columntypes[col],columntype="Value",isrequired=true)
+        push!(columns,NeuroData.DestinationTableDefinitionColumn(;name=columnnames[col],datatype=columntypes[col],columntype="Value",isrequired=true))
     end
 
     table_def=NeuroData.DestinationTableDefinition(;allowdatachanges=false,columns=columns,
