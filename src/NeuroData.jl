@@ -35,6 +35,8 @@
             - save_table_definition(;tabledefinition::DestinationTableDefinition=nothing,filename::String=nothing)
             - load_table_definition(;filename::String=nothing)
             - create_table_mapping(;storename=nothing,tablename=nothing,mappingname=nothing,notmapped=Array{String,1}(),source_dest_name_pairs=Array{Tuple{String,String}}(0))
+            - create_processed_table!(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::Union{String,Void}=nothing)
+            - delete_processed_table!(datastorename::String,tablename::String)
         Types:
             - DestinationTableDefinitionColumn
             - DestinationTableDefinition
