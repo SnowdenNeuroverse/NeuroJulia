@@ -34,6 +34,10 @@ type CsvNotebookFileShareSourceParameters <: AbstractSourceParameters
     DataStartRow::Int
     Headers::Array{String,1}
     Types::Array{String,1}
+    function CsvNotebookFileShareSourceParameters(filename,datastartrow,headers,types)
+        filename=pwd()*"/"*strip(filename,'/')
+        new(filename,datastartrow,headers,types)
+    end
 end
 
 """
@@ -47,6 +51,7 @@ type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
     Expressions::Union{Array{String,1},Void}
     WhereClause::Union{String,Void}
     function CsvNotebookFileShareSinkParameters(filename,headers,types;expressions=nothing,whereclause=nothing)
+        filename=pwd()*"/"*strip(filename,'/')
         new(filename,headers,types,expressions,whereclause)
     end
 end
