@@ -195,7 +195,7 @@ function get_table_definition(;storename::String=nothing,tablename::String=nothi
 
     new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
     columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes,schematype=schematype)
-    table_def.DestinationTableDefinitionId=table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"]
+    new_table_def.DestinationTableDefinitionId=table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"]
     return new_table_def
 end
 
