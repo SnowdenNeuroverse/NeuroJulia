@@ -84,7 +84,7 @@ end
 Parameters:
 function DestinationTableDefinition(;allowdatachanges::Bool=false,columns::Array{DestinationTableDefinitionColumn,1}=nothing,
         name::String=nothing,tableindexes::Union{Array{DestinationTableDefinitionIndex,1},Void}=nothing,
-        schematype::Union{String,Void}=nothing,schematypeid::Union{Int,Void}=nothing,filepath::Union{String,Void}=nothing)
+        schematype::Union{String,Void}=nothing,schematypeid::Union{Int,Void}=nothing,partitionpath::Union{String,Void}=nothing)
 Required:
 name
 columns
@@ -107,7 +107,7 @@ type DestinationTableDefinition
     FilePath::Union{String,Void}
     function DestinationTableDefinition(;allowdatachanges::Bool=false,columns::Array{DestinationTableDefinitionColumn,1}=nothing,
         name::String=nothing,tableindexes::Union{Array{DestinationTableDefinitionIndex,1},Void}=nothing,
-        schematype::Union{String,Void}=nothing,schematypeid::Union{Int,Void}=nothing,filepath::Union{String,Void}=nothing)
+        schematype::Union{String,Void}=nothing,schematypeid::Union{Int,Void}=nothing,partitionpath::Union{String,Void}=nothing)
         for ind=1:length(columns)
             columns[ind].Index=ind
         end
@@ -127,7 +127,7 @@ type DestinationTableDefinition
         if tableindexes!=nothing
             indexes=tableindexes
         end
-       return new(allowdatachanges,columns,indexes,name,datastoreid,schematypeid,filepath) 
+       return new(allowdatachanges,columns,indexes,name,datastoreid,schematypeid,partitionpath) 
     end
 end
 
@@ -302,3 +302,24 @@ function create_table_mapping(;storename=nothing,tablename=nothing,mappingname=n
     data=NeuroData.DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
     NeuroJulia.neurocall("DataPopulationService","CreateDataPopulationMapping",data)
 end
+
+
+function create_processed_table(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::String="")
+    schematype="Processed"
+    
+    columns=NeuroData.DestinationTableDefinitionColumn[]
+    for col=1:length(columnnames)
+        push!(columns,NeuroData.DestinationTableDefinitionColumn(;name=columnnames[col],datatype=columntypes[col],columntype="Value",isrequired=true)
+    end
+    
+    partitionpath=strip(partitionpath,'/')
+    table_def=NeuroData.DestinationTableDefinition(;allowdatachanges=false,columns=columns,
+            name=tablename,schematype=schematype,filepath="/Managed/$schematype/Table/$tablename/$partitionpath")
+
+    NeuroData.create_destination_table(storename=datastorename,tabledefinition=table_def)
+end
+
+function delete_processed_table(datastorename::String,tablename::String)
+    
+end
+    
