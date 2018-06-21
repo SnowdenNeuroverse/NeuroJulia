@@ -1,4 +1,5 @@
-data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14,"BigInt"=>1,"Boolean"=>3,"DateTime"=>6,"UniqueIdentifier"=>22)
+data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14,"BigInt"=>1,"Boolean"=>3,"DateTime"=>6,"UniqueIdentifier"=>22,
+"Int32"=>11,"Int64"=>1,"Double"=>10,"Guid"=>22)
 col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4,"TimeStampKey"=>3,"ForeignKey"=>2)
 
 """
@@ -91,6 +92,7 @@ columns
 schematype or schematypeid
 """
 type DestinationTableDefinition
+    DestinationTableDefinitionId::String
     AllowDataLossChanges::Bool
     #CreatedBy::String
     #CreatedDate::String
@@ -193,8 +195,10 @@ function get_table_definition(;storename::String=nothing,tablename::String=nothi
 
     new_table_def=NeuroData.DestinationTableDefinition(allowdatachanges=table_def["DestinationTableDefinitions"][1]["AllowDataLossChanges"],
     columns=cols,name=table_def["DestinationTableDefinitions"][1]["DestinationTableName"],tableindexes=indexes,schematype=schematype)
+    table_def.DestinationTableDefinitionId=table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"]
     return new_table_def
 end
+
 
 "add_destination_table_indexes(;storename::String=val1,tablename::String=val2,tableindexes::Array{DestinationTableDefinitionIndex,1}=val3)"
 function add_destination_table_indexes(;storename::String=nothing,tablename::String=nothing,tableindexes::Array{DestinationTableDefinitionIndex,1}=nothing)
@@ -304,7 +308,7 @@ function create_table_mapping(;storename=nothing,tablename=nothing,mappingname=n
 end
 
 
-function create_processed_table(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::String="")
+function create_processed_table!(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::String="")
     schematype="Processed"
     
     columns=NeuroData.DestinationTableDefinitionColumn[]
@@ -319,7 +323,11 @@ function create_processed_table(datastorename::String,tablename::String,columnna
     NeuroData.create_destination_table(storename=datastorename,tabledefinition=table_def)
 end
 
-function delete_processed_table(datastorename::String,tablename::String)
-    
+function delete_processed_table!(datastorename::String,tablename::String)
+    table_def=get_table_definition(storename=datastorename,tablename=tablename)
+    if table_def.SchemaType!=3
+        error("Table schema type is not processed")
+    end
+    NeuroJulia.neurocall("DataPopulationService","DeleteDestinationTableDefinition",Dict("DestinationTableDefinitionId"=>table_def.DestinationTableDefinitionId))
 end
     
