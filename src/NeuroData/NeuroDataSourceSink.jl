@@ -72,7 +72,7 @@ type CsvDataLakeSourceParameters <: AbstractSourceParameters
     function CsvDataLakeSourceParameters(datastorename,tablename,filename_including_partition,datastartrow)
         table_def=get_table_definition(storename=datastorename,tablename=tablename)
         schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
-        filename=lowercase("/managed/$schematype/table/"*strip(filename_including_partition,'/'))
+        filename=lowercase("/managed/$schematype/table/$tablename/"*strip(filename_including_partition,'/'))
         new(datastorename,tablename,filename,datastartrow)
     end
 end
@@ -89,7 +89,7 @@ type CsvDataLakeSinkParameters <: AbstractSinkParameters
     function CsvDataLakeSinkParameters(datastorename,tablename,partitionpath;expressions=nothing,whereclause=nothing)
         table_def=get_table_definition(storename=datastorename,tablename=tablename)
         schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
-        folderpath=lowercase("/managed/$schematype/table/"*strip(partitionpath,'/'))
+        folderpath=lowercase("/managed/$schematype/table/$tablename/"*strip(partitionpath,'/'))
         new(datastorename,tablename,folderpath,expressions,whereclause)
     end
 end
