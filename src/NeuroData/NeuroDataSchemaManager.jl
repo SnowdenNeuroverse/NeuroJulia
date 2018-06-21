@@ -1,7 +1,8 @@
 data_type_map=Dict{String,Int}("Int"=>11,"Decimal"=>9,"String"=>14,"BigInt"=>1,"Boolean"=>3,"DateTime"=>6,"UniqueIdentifier"=>22,
 "Int32"=>11,"Int64"=>1,"Double"=>10,"Guid"=>22)
 col_type_map=Dict{String,Int}("Key"=>1,"Value"=>4,"TimeStampKey"=>3,"ForeignKey"=>2)
-
+schema_type_map=Dict{String,Int}("DataIngestion"=>1,"TimeSeries"=>2,"Processed"=>3)
+    
 """
 Parameters:
 indexname::String,indexcolumnnames::Array{String,1}
@@ -114,14 +115,14 @@ type DestinationTableDefinition
             columns[ind].Index=ind
         end
         if schematypeid==nothing
-            if schematype=="Data Ingestion"
+            if schematype=="DataIngestion"
                 schematypeid=1
-            elseif schematype=="Time Series"
+            elseif schematype=="TimeSeries"
                 schematypeid=2
             elseif schematype=="Processed"
                 schematypeid=3
             else
-                error("schematype must be \"Data Ingestion\", \"Time Series\" or \"Processed\"")
+                error("schematype must be \"DataIngestion\", \"TimeSeries\" or \"Processed\"")
             end
         end
         datastoreid=nothing
@@ -186,9 +187,9 @@ function get_table_definition(;storename::String=nothing,tablename::String=nothi
 
     schematype=""
     if schematypeid==1
-        schematype="Data Ingestion"
+        schematype="DataIngestion"
     elseif schematypeid==2
-        schematype="Time Series"
+        schematype="TimeSeries"
     elseif schematypeid==3
         schematype="Processed"
     end
