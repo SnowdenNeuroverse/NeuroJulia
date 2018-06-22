@@ -10,11 +10,23 @@ function delete_datalake_file!(datastorename::String,tablename::String,filename_
     folderpath=lowercase("/managed/$schematype/table/$tablename/")
     request=DataLakeDeleteFileRequest(datastorename,tablename,folderpath*strip(filename_including_partition,'/'))
     response=NeuroJulia.neurocall("8080","DataMovementService","DataLakeDeleteFile",request)
-    sleep(1)
-    while NeuroJulia.neurocall("8080","DataMovementService","CheckJob",Dict("JobId"=>response["JobId"]))["Status"]==0
+    check_request=Dict("JobId"=>response["JobId"])
+    status=0
+    errormsg=""
+    while(status==0)
         sleep(1)
+        response_c=NeuroJulia.neurocall("8080","DataMovementService","CheckJob",check_request)
+        status=response_c["Status"]
+        if status>1
+            errormsg=response_c["Message"]
+        end
     end
-    NeuroJulia.neurocall("8080","DataMovementService","FinaliseJob",Dict("JobId"=>response["JobId"]))
+    
+    NeuroJulia.neurocall("8080","DataMovementService","FinaliseJob",check_request)
+
+    if status!=1
+        error("Neuroverse error: " * errormsg)
+    end
     return nothing
 end
 #listdatalaketablefiles
