@@ -58,7 +58,7 @@ type SqlDeleteRequest
     TableName::String
     WhereClause::Union{String,Void}
 end
-function sqldeleterows!(datastorename::String,tablename::String,whereclause=nothing)
+function sqldeleterows!(datastorename::String,tablename::String;whereclause=nothing)
     request=SqlDeleteRequest(datastorename,tablename,whereclause)
     NeuroJulia.neurocall("8080","DataMovementService","SqlDelete",request)
     return nothing
