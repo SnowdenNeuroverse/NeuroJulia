@@ -161,7 +161,7 @@ function get_table_definition(;storename::String=nothing,tablename::String=nothi
         error("Data Store name is not valid")
     end
     request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
-    table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)
+    table_def=NeuroJulia.neurocall("8080","DataPopulationService","GetDestinationTableDefinition",request)
     
     if length(table_def["DestinationTableDefinitions"])==0
         error("Table doesn't exist")
