@@ -1,5 +1,8 @@
 """
     Streams:
+        Notes:
+            The whereclause and expressions in the sink types allow the use of 2 variables, RANDOM and ROW.
+            These can be used to do random sampling or split up the table.
         Functions:
             - stream(source,sink) returns StreamResponse
             - sinktosource(sink,streamresponse)
@@ -25,8 +28,8 @@
             - SqlJoin
     Datalake commands:
         Functions:
-            - deletedatalakefile!(datastorename::String,tablename::String,filename_including_partition::String)
-            - listdatalaketablefileswithpartitions(datastorename::String,tablename::String)
+            - delete_datalake_file!(datastorename::String,tablename::String,filename_including_partition::String)
+            - list_datalake_table_files_with_partitions(datastorename::String,tablename::String)
     Schema manager commands:
         Functions:
             - create_destination_table(;storename::String=nothing,tabledefinition::DestinationTableDefinition=nothing)
