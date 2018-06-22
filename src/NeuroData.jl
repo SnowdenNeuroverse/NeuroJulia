@@ -3,6 +3,8 @@
         Notes:
             The whereclause and expressions in the sink types allow the use of 2 variables, RANDOM and ROW.
             These can be used to do random sampling or split up the table.
+            The DataMovement service allows for a maximum of 1000000 rows to be written to an output table at one time. Larger results
+            can be written through multiple calls to the stream function using ROW filters in the whereclause
         Functions:
             - stream(source,sink) returns StreamResponse
             - sinktosource(sink,streamresponse)
