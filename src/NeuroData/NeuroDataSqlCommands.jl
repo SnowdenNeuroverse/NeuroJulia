@@ -37,7 +37,12 @@ function sqltocsv(datastorename::String,sqlquery::SqlQuery,filename::String,fold
         error("File exists: " * folder * filename)
     end
     request=SqlQueryToCsvNotebookFileShareRequest(Dict("DataStoreName"=>datastorename,"SqlQuery"=>sqlquery),folder * filename)
-    NeuroJulia.neurocall("8080","DataMovementService","SqlQueryToCsvNotebookFileShare",request)
+    response=NeuroJulia.neurocall("8080","DataMovementService","SqlQueryToCsvNotebookFileShare",request)
+    sleep(1)
+    while NeuroJulia.neurocall("8080","DataMovementService","CheckJob",Dict("JobId"=>response["JobId"]))["Status"]==0
+        sleep(1)
+    end
+    NeuroJulia.neurocall("8080","DataMovementService","FinaliseJob",Dict("JobId"=>response["JobId"]))
     return folder * filename
 end
 
@@ -49,6 +54,11 @@ end
 function sqltransformation(datastorename::String,sqlquery::SqlQuery,sinktablename::String)
     request=SqlTransformationRequest(Dict("DataStoreName"=>datastorename,"SqlQuery"=>sqlquery),sinktablename)
     response=NeuroJulia.neurocall("8080","DataMovementService","SqlTransformation",request)
+    sleep(1)
+    while NeuroJulia.neurocall("8080","DataMovementService","CheckJob",Dict("JobId"=>response["JobId"]))["Status"]==0
+        sleep(1)
+    end
+    NeuroJulia.neurocall("8080","DataMovementService","FinaliseJob",Dict("JobId"=>response["JobId"]))
     return StreamResponse(response["JobId"],response["TimeStamp"])
 end
 
@@ -60,6 +70,11 @@ type SqlDeleteRequest
 end
 function sqldeleterows!(datastorename::String,tablename::String;whereclause=nothing)
     request=SqlDeleteRequest(datastorename,tablename,whereclause)
-    NeuroJulia.neurocall("8080","DataMovementService","SqlDelete",request)
+    response=NeuroJulia.neurocall("8080","DataMovementService","SqlDelete",request)
+    sleep(1)
+    while NeuroJulia.neurocall("8080","DataMovementService","CheckJob",Dict("JobId"=>response["JobId"]))["Status"]==0
+        sleep(1)
+    end
+    NeuroJulia.neurocall("8080","DataMovementService","FinaliseJob",Dict("JobId"=>response["JobId"]))
     return nothing
 end
