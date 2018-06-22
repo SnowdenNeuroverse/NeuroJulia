@@ -154,12 +154,8 @@ end
 
 "get_table_definition(;storename::String=val1,tablename::String=val2)"
 function get_table_definition(;storename::String=nothing,tablename::String=nothing)
-    datastoreid=nothing
-    try
-        datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
-    catch
-        error("Data Store name is not valid")
-    end
+    datastoreid=NeuroJulia.neurocall("80","datastoremanager","GetDataStores",Dict("StoreName"=>storename))["DataStores"][1]["DataStoreId"]
+
     request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
     table_def=NeuroJulia.neurocall("8080","DataPopulationService","GetDestinationTableDefinition",request)
     
