@@ -19,7 +19,7 @@
             - sqltodf(datastorename::String,sqlquery::SqlQuery)
             - sqltocsv(datastorename::String,sqlquery::SqlQuery,filename::String,folderpathfromroot::Union{String,Void}=nothing)
             - sqltransformation(datastorename::String,sqlquery::SqlQuery,sinktablename::String)
-            - sqldeleterows!(datastorename::String,tablename::String,whereclause=nothing)
+            - sqldeleterows!(datastorename::String,tablename::String;whereclause=nothing)
         Types:
             - SqlQuery
             - SqlJoin
