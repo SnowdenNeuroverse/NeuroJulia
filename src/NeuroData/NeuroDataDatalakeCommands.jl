@@ -9,7 +9,11 @@ function delete_datalake_file!(datastorename::String,tablename::String,filename_
     schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
     folderpath=lowercase("/managed/$schematype/table/$tablename/")
     request=DataLakeDeleteFileRequest(datastorename,tablename,folderpath*strip(filename_including_partition,'/'))
-    NeuroJulia.neurocall("8080","DataMovementService","DataLakeDeleteFile",request)
+    response=NeuroJulia.neurocall("8080","DataMovementService","DataLakeDeleteFile",request)
+    sleep(1)
+    while NeuroJulia.neurocall("8080","DataMovementService","DataLakeDeleteFile",Dict("JobId"=>response["JobId"]))["Status"]==0
+        sleep(1)
+    end
     return nothing
 end
 #listdatalaketablefiles
