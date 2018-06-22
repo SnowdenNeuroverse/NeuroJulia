@@ -4,7 +4,7 @@ type DataLakeDeleteFileRequest
     TableName::String
     FilePath::String
 end
-function delete_datalake_file!(datastorename::String,tablename::String,filename_including_partition::String)
+function delete_datalake_file!(datastorename::String,tablename::String,filename_including_partition::AbstractString)
     table_def=get_table_definition(storename=datastorename,tablename=tablename)
     schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
     folderpath=lowercase("/managed/$schematype/table/$tablename/")
@@ -18,7 +18,7 @@ type ListDataLakeTableFilesRequest
     TableName::String
 end
 
-function listdatalaketablefileswithpartitions(datastorename::String,tablename::String)
+function list_datalake_table_files_with_partitions(datastorename::String,tablename::String)
     request=ListDataLakeTableFilesRequest(datastorename,tablename)
     files=NeuroJulia.neurocall("8080","DataMovementService","ListDataLakeTableFiles",request)["Files"]
     return [split(files[i],lowercase(tablename))[2] for i=1:length(files)]
