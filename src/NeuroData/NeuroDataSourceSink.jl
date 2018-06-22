@@ -96,6 +96,7 @@ end
 
 function sinktosource(sink::CsvDataLakeSinkParameters,response::AbstractStreamResponse)::CsvDataLakeSourceParameters
     fileName=sink.FolderPath * "/" * response.JobId * "_" * replace(replace(response.TimeStamp,":","-"),".","-") * ".csv"
+    fileName=split(fileName,sink.TableName)[2]
     return CsvDataLakeSourceParameters(sink.DataStoreName,sink.TableName,fileName,1)
 end
 
