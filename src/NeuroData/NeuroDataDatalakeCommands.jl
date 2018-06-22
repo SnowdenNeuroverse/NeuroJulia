@@ -21,5 +21,5 @@ end
 function listdatalaketablefileswithpartitions(datastorename::String,tablename::String)
     request=ListDataLakeTableFilesRequest(datastorename,tablename)
     files=NeuroJulia.neurocall("8080","DataMovementService","ListDataLakeTableFiles",request)["Files"]
-    return [split(files[i],tablename)[2] for i=1:length(files)]
+    return [split(files[i],lowercase(tablename))[2] for i=1:length(files)]
 end
