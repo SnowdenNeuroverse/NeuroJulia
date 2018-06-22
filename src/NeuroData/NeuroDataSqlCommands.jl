@@ -10,6 +10,7 @@ function sqltodf(datastorename::String,sqlquery::SqlQuery)
     try
         df=CSV.read(NeuroJulia.homedir * csvfile)
     catch
+        rm(NeuroJulia.homedir * csvfile)
         error("Table has no data")
     end
     
