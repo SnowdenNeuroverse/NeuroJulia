@@ -72,7 +72,7 @@ type CsvDataLakeSourceParameters <: AbstractSourceParameters
     function CsvDataLakeSourceParameters(datastorename,tablename,filename_including_partition,datastartrow)
         table_def=get_table_definition(storename=datastorename,tablename=tablename)
         schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
-        filename=lowercase("/managed/$schematype/table/$tablename/"*strip(filename_including_partition,'/'))
+        filename=lowercase("/managed/$schematype/table/$tablename/")*strip(filename_including_partition,'/')
         new(datastorename,tablename,filename,datastartrow)
     end
 end
@@ -96,7 +96,7 @@ end
 
 function sinktosource(sink::CsvDataLakeSinkParameters,response::AbstractStreamResponse)::CsvDataLakeSourceParameters
     fileName=sink.FolderPath * "/" * response.JobId * "_" * replace(replace(response.TimeStamp,":","-"),".","-") * ".csv"
-    fileName=split(fileName,sink.TableName)[2]
+    fileName=split(fileName,lowercase(sink.TableName))[2]
     return CsvDataLakeSourceParameters(sink.DataStoreName,sink.TableName,fileName,1)
 end
 
