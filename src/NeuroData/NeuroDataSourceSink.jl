@@ -5,6 +5,10 @@
 type SqlSourceParameters <: AbstractSourceParameters
     DataStoreName::String
     TableName::String
+    SqlWhereClause::Union{String,Void}
+    function SqlSourceParameters(datastorename::String,tablename::String;sqlwhereclause::Union{String,Void}=nothing)
+        new(datastorename,tablename,sqlwhereclause)
+    end
 end
 
 """
