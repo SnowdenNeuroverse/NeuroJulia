@@ -1,6 +1,6 @@
 #-----------Sql-------------------
 """
-    function SqlSourceParameters(datastorename::String,tablename::String)
+    function SqlSourceParameters(datastorename::String,tablename::String;sqlwhereclause::Union{String,Void}=nothing)
 """
 type SqlSourceParameters <: AbstractSourceParameters
     DataStoreName::String
