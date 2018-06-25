@@ -32,6 +32,8 @@
         Functions:
             - delete_datalake_file!(datastorename::String,tablename::String,filename_including_partition::String)
             - list_datalake_table_files_with_partitions(datastorename::String,tablename::String)
+            - get_lines_in_datalake_csv(datastorename::String,tablename::String,filename_including_partition::AbstractString)
+            - rechunk_datalake_csv(datastorename::String,fromtablename::String,filename_including_partition::AbstractString,totablename::String)
     Schema manager commands:
         Functions:
             - create_destination_table(;storename::String=nothing,tabledefinition::DestinationTableDefinition=nothing)
