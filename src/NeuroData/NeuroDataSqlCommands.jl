@@ -25,7 +25,7 @@ type SqlQueryToCsvNotebookFileShareRequest
 end
 function sqltocsv(datastorename::String,sqlquery::SqlQuery,filename::String,folderpathfromroot::Union{String,Void}=nothing)
     if folderpathfromroot==nothing
-        folderpathfromroot=replace(pwd()*"/",NeuroJulia.homedir,"")
+        folderpathfromroot=replace(strip(pwd(),'/')*"/",strip(NeuroJulia.homedir,'/'),"")
     end
     if folderpathfromroot[1]=='/' || folderpathfromroot[1]=='\\'
         folderpathfromroot=folderpathfromroot[2:length(folderpathfromroot)]
