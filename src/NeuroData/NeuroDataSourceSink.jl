@@ -39,7 +39,10 @@ type CsvNotebookFileShareSourceParameters <: AbstractSourceParameters
     Headers::Array{String,1}
     Types::Array{String,1}
     function CsvNotebookFileShareSourceParameters(filename,datastartrow,headers,types)
-        filename=replace(strip(pwd(),'/'),strip(NeuroJulia.homedir,'/'),"")*"/"*strip(filename,'/')
+        filename=strip(replace(strip(pwd(),'/'),strip(NeuroJulia.homedir,'/'),"")*"/"*strip(filename,'/'),'/')
+        if !isfile("/"*strip(NeuroJulia.homedir,'/')*"/"*filename)
+            error("File doesn't exitst")
+        end
         new(filename,datastartrow,headers,types)
     end
 end
@@ -55,7 +58,7 @@ type CsvNotebookFileShareSinkParameters <: AbstractSinkParameters
     Expressions::Union{Array{String,1},Void}
     WhereClause::Union{String,Void}
     function CsvNotebookFileShareSinkParameters(filename,headers,types;expressions=nothing,whereclause=nothing)
-        filename=replace(strip(pwd(),'/'),strip(NeuroJulia.homedir,'/'),"")*"/"*strip(filename,'/')
+        filename=strip(replace(strip(pwd(),'/'),strip(NeuroJulia.homedir,'/'),"")*"/"*strip(filename,'/'),'/')
         new(filename,headers,types,expressions,whereclause)
     end
 end
