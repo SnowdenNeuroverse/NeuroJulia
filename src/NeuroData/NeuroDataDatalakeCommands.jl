@@ -60,7 +60,7 @@ function get_lines_in_datalake_csv(datastorename::String,tablename::String,filen
         sleep(1)
         response_c=NeuroJulia.neurocall("8080","DataMovementService","CheckJob",check_request)
         status=response_c["Status"]
-        if status>1
+        if status>=1
             errormsg=response_c["Message"]
         end
     end
