@@ -83,7 +83,7 @@ end
 function rechunk_datalake_csv(datastorename::String,fromtablename::String,filename_including_partition::AbstractString,totablename::String)
     table_def=get_table_definition(storename=datastorename,tablename=fromtablename)
     schematype=filter(tuple->last(tuple)==table_def.SchemaType,collect(schema_type_map))[1][1]
-    folderpath=lowercase("/managed/$schematype/table/$tablename/")
+    folderpath=lowercase("/managed/$schematype/table/$fromtablename/")
     request=DataLakeReChunkCsvFileRequest(datastorename,fromtablename,folderpath*strip(filename_including_partition,'/'),totablename)
     response=NeuroJulia.neurocall("8080","DataMovementService","DataLakeReChunkCsvFile",request)
     check_request=Dict("JobId"=>response["JobId"])
