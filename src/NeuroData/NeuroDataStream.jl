@@ -18,7 +18,7 @@ function stream(source::AbstractSourceParameters,sink::AbstractSinkParameters)::
     sinkname=replace(sinklist[length(sinklist)],"SinkParameters","")
     
     method = sourcename * "To" * sinkname
-    response = NeuroJulia.neurocall("8080","DataMovementService",method,request)
+    response = NeuroJulia.neurocall("80","DataMovementService",method,request)
     
     check_request=Dict("JobId"=>response["JobId"])
 
@@ -26,14 +26,14 @@ function stream(source::AbstractSourceParameters,sink::AbstractSinkParameters)::
     errormsg=""
     while(status==0)
         sleep(1)
-        response_c=NeuroJulia.neurocall("8080","DataMovementService","CheckJob",check_request)
+        response_c=NeuroJulia.neurocall("80","DataMovementService","CheckJob",check_request)
         status=response_c["Status"]
         if status>1
             errormsg=response_c["Message"]
         end
     end
     
-    NeuroJulia.neurocall("8080","DataMovementService","FinaliseJob",check_request)
+    NeuroJulia.neurocall("80","DataMovementService","FinaliseJob",check_request)
 
     if status!=1
         error("Neuroverse error: " * errormsg)
