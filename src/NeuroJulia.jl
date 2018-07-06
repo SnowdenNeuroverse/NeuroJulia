@@ -14,8 +14,10 @@ module NeuroJulia
         "https://launchau.snowdenonline.com.au"
     elseif contains(domain,"sit")
         "https://neurosit.snowdenonline.com.au"
-    else
+    elseif contains(domain,"dev")
         "https://neurodev.snowdenonline.com.au"
+    else
+        "http://localhost"
     end
     global homedir = "/home/jovyan/session/"
 
@@ -26,6 +28,9 @@ module NeuroJulia
 
     function neurocall(port,service,method,requestbody;timeout=1200)
         url = domain * ":8080/NeuroApi/" * port * "/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
+        if domain=="http://localhost"
+            url = domain * ":8082/NeuroApi/" * port * "/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
+        end
         msgdata = nothing
         msgdatalength = 0
         if requestbody!=nothing
@@ -37,6 +42,8 @@ module NeuroJulia
         if response.status != 200
             if response.status == 401
                 error("Session has expired: Log into Neuroverse and connect to your Notebooks session or reload the Notebooks page in Neuroverse")
+            elseif response.status == 404
+                error(replace(lowercase(service),"service","") * "/" * method * " does not exist")
             else
                 error("Neuroverse connection error: Http code " * string(response.status))
             end
@@ -51,6 +58,9 @@ module NeuroJulia
 
     function neurocall(service,method,requestbody;timeout=1200)
         url = domain * ":8080/NeuroApi/8080/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
+        if domain=="http://localhost"
+            url = domain * ":8082/NeuroApi/8080/" * service * "/api/" * replace(lowercase(service),"service","") * "/" * method
+        end
         msgdata = nothing
         msgdatalength = 0
         if requestbody!=nothing
