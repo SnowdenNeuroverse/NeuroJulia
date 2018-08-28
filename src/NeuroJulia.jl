@@ -48,6 +48,10 @@ module NeuroJulia
                 error("Neuroverse connection error: Http code " * string(response.status))
             end
         end
+        file = open("testoutput.txt","a+")
+        write(file,msgdata)
+        write(file,"\n")
+        close(file)
         responseobj = JSON.parse(readstring(response))
         if responseobj["Error"] != nothing
             error("Neuroverse Error: " * responseobj["Error"])
