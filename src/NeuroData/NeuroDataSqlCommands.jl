@@ -15,6 +15,8 @@ function sqltodf(datastorename::String,sqlquery::SqlQuery)
     end
     
     rm(NeuroJulia.homedir * csvfile)
+    
+    delete!(df,:NeuroverseLastModified)
     return df
 end
 
