@@ -49,7 +49,7 @@ module NeuroJulia
             end
         end
         responseobj = JSON.parse(readstring(response))
-        if responseobj["Error"] != nothing
+        if responseobj["ErrorCode"] != 0
             error("Neuroverse Error: " * responseobj["Error"])
         end
         return responseobj
@@ -77,7 +77,7 @@ module NeuroJulia
             end
         end
         responseobj = JSON.parse(readstring(response))
-        if responseobj["Error"] != nothing
+        if responseobj["ErrorCode"] != 0
             error("Neuroverse Error: " * responseobj["Error"])
         end
         return responseobj
