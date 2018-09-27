@@ -144,7 +144,7 @@ function create_destination_table(;storename::String=nothing,tabledefinition::De
     end
 
     tabledefinition.DataStoreId=datastoreid
-    NeuroJulia.neurocall("datapopulationservice","CreateDestinationTableDefinition",tabledefinition)
+    NeuroJulia.neurocall("80","datapopulation","CreateDestinationTableDefinition",tabledefinition)
 end
 
 type GetDestinationTableDefinitionRequest
@@ -160,7 +160,7 @@ function get_table_definition(;storename::String=nothing,tablename::String=nothi
     end
     datastoreid=datastores[1]["DataStoreId"]
     request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
-    table_def=NeuroJulia.neurocall("8080","DataPopulationService","GetDestinationTableDefinition",request)
+    table_def=NeuroJulia.neurocall("80","DataPopulation","GetDestinationTableDefinition",request)
     
     if length(table_def["DestinationTableDefinitions"])==0
         error("Table doesn't exist")
@@ -214,9 +214,9 @@ function add_destination_table_indexes(;storename::String=nothing,tablename::Str
         error("Data Store name is not valid")
     end    
     request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
-    table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)["DestinationTableDefinitions"][1]
+    table_def=NeuroJulia.neurocall("80","DataPopulation","GetDestinationTableDefinition",request)["DestinationTableDefinitions"][1]
     append!(table_def["DestinationTableDefinitionIndexes"],JSON.parse(JSON.json(tableindexes)))
-    NeuroJulia.neurocall("datapopulationservice","UpdateDestinationTableDefinition",table_def)
+    NeuroJulia.neurocall("80","datapopulation","UpdateDestinationTableDefinition",table_def)
 end
 
 "save_table_definition(;tabledefinition::DestinationTableDefinition=val1,filename::String=val2)"
@@ -287,7 +287,7 @@ function create_table_mapping(;storename=nothing,tablename=nothing,mappingname=n
         error("Data Store name is not valid")
     end    
     request=GetDestinationTableDefinitionRequest(tablename,datastoreid)
-    table_def=NeuroJulia.neurocall("DataPopulationService","GetDestinationTableDefinition",request)
+    table_def=NeuroJulia.neurocall("80","DataPopulation","GetDestinationTableDefinition",request)
     columns=NeuroData.DataPopulationMappingSourceColumn[]
     for col in table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionColumns"]
         if col["ColumnName"]!="NeuroverseLastModified"
@@ -309,7 +309,7 @@ function create_table_mapping(;storename=nothing,tablename=nothing,mappingname=n
     end
 
     data=NeuroData.DataPopulationMappingRequest(table_def["DestinationTableDefinitions"][1]["DestinationTableDefinitionId"],columns,mappingname)
-    NeuroJulia.neurocall("DataPopulationService","CreateDataPopulationMapping",data)
+    NeuroJulia.neurocall("80","DataPopulation","CreateDataPopulationMapping",data)
 end
 
 "create_processed_table!(datastorename::String,tablename::String,columnnames::Array{String,1},columntypes::Array{String,1};partitionpath::Union{String,Void}=nothing)"
@@ -332,6 +332,6 @@ function delete_processed_table!(datastorename::String,tablename::String)
     if table_def.SchemaType!=3
         error("Table schema type is not processed")
     end
-    NeuroJulia.neurocall("DataPopulationService","DeleteDestinationTableDefinition",Dict("DestinationTableDefinitionId"=>table_def.DestinationTableDefinitionId))
+    NeuroJulia.neurocall("80","DataPopulation","DeleteDestinationTableDefinition",Dict("DestinationTableDefinitionId"=>table_def.DestinationTableDefinitionId))
 end
     
