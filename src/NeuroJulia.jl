@@ -11,7 +11,7 @@ module NeuroJulia
         #"https://neuroverse.com.au"
         "https://15ded47f-ef38-4ee3-b989-685820ca3d36.cloudapp.net"
     elseif contains(domain,"tst")
-        "https://launchau.snowdenonline.com.au"
+        "https://neuroqa.d3s.com.au"
     elseif contains(domain,"sit")
         "https://neurosit.snowdenonline.com.au"
     elseif contains(domain,"dev")
