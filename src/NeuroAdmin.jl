@@ -20,7 +20,7 @@ module NeuroAdmin
         return df
     end
     function getendpointlog(endpointName,startDate,endDate)
-        endPointResultEnvelope = NeuroJulia.neurocall("8080","endpointmanagementservice","GetEndpoints",nothing)
+        endPointResultEnvelope = NeuroJulia.neurocall("80","endpointmanagement","GetEndpoints",nothing)
         endpointId = ""
         for endpoint in endPointResultEnvelope["EndPointInfo"]
             if endpoint["Name"] == endpointName
@@ -28,7 +28,7 @@ module NeuroAdmin
             end
         end
         request = Dict("EndpointId"=>endpointId,"MessageTypeId"=> "", "EndDate"=>endDate, "StartDate"=>startDate)
-        resultEnvelope = NeuroJulia.neurocall("8080","endpointmanagementservice","GetMonitorLogEntries",request)
+        resultEnvelope = NeuroJulia.neurocall("80","endpointmanagement","GetMonitorLogEntries",request)
         return resultEnvelope["DataIngestionLogEntries"]
     end
 end
