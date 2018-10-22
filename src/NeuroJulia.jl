@@ -13,9 +13,9 @@ module NeuroJulia
     elseif contains(domain,"tst")
         "https://neuroqa.d3s.com.au"
     elseif contains(domain,"sit")
-        "https://neurosit.snowdenonline.com.au"
+        "https://neurosit.d3s.com.au"
     elseif contains(domain,"dev")
-        "https://neurodev.snowdenonline.com.au"
+        "https://neurodev.d3s.com.au"
     else
         "http://localhost"
     end
